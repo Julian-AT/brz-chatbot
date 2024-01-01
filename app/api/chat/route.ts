@@ -218,7 +218,30 @@ export async function POST(req: Request) {
       chatHistory: formattedPreviousMessages.join('\n')
     })
 
-    return new StreamingTextResponse(stream)
+    const encoder = new TextEncoder()
+    const tes = {
+      start() {},
+      transform(chunk: string, controller: any) {
+        controller.enqueue(encoder.encode(chunk))
+      }
+    }
+
+    /* Create a transform stream that encodes the text to unit8 */
+    let __info_holder = new WeakMap() /* info holder */
+    class EdgeRuntimeTransformer extends TransformStream {
+      constructor() {
+        let t = { ...tes }
+        super(t)
+        __info_holder.set(this, t)
+      }
+      get encoding() {
+        return __info_holder.get(this).encoder.encoding
+      }
+    }
+
+    return new StreamingTextResponse(
+      stream.pipeThrough(new EdgeRuntimeTransformer())
+    )
   } catch (e: any) {
     console.log(e)
     return NextResponse.json({ error: e.message }, { status: 500 })
