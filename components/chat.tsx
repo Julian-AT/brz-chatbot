@@ -64,22 +64,26 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       {messages?.length ? (
         <div
           className={cn(
-            'pb-[200px] pt-4 md:pt-10 p-3 flex flex-col h-full w-full',
+            'pb-[200px] pt-4 md:pt-10 p-3 flex flex-col h-full w-full ',
             className
           )}
         >
-          <ChatList messages={messages} />
-          <ChatScrollAnchor trackVisibility={isLoading} />
-          <ChatPanel
-            id={id}
-            isLoading={isLoading}
-            stop={stop}
-            append={append}
-            reload={reload}
-            messages={messages ?? []}
-            input={input}
-            setInput={setInput}
-          />
+          <div className="w-full h-full container">
+            <ChatList messages={messages} />
+          </div>
+          <div className="sticky bottom-0 w-full">
+            <ChatScrollAnchor trackVisibility={isLoading} />
+            <ChatPanel
+              id={id}
+              isLoading={isLoading}
+              stop={stop}
+              append={append}
+              reload={reload}
+              messages={messages ?? []}
+              input={input}
+              setInput={setInput}
+            />
+          </div>
         </div>
       ) : (
         <div className="w-full h-full">
