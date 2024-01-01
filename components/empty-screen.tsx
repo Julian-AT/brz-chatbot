@@ -27,7 +27,7 @@ export function EmptyScreen({ children }: EmptyScreenProps) {
           </Balancer>
         </div>
         <div className="hidden mb-10 md:inline">{children}</div>
-        <div className="w-3/4 mx-auto border pb-32 md:pb-0">
+        <div className="w-3/4 mx-auto pb-32 md:pb-0">
           <Cards />
         </div>
       </div>
