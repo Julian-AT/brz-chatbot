@@ -3,25 +3,10 @@ import { ChatOpenAI } from 'langchain/chat_models/openai'
 import { QdrantVectorStore } from 'langchain/vectorstores/qdrant'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { NextResponse } from 'next/server'
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-  PromptTemplate
-} from 'langchain/prompts'
-import {
-  BytesOutputParser,
-  StringOutputParser
-} from 'langchain/schema/output_parser'
+import { PromptTemplate } from 'langchain/prompts'
+import { StringOutputParser } from 'langchain/schema/output_parser'
 import { RunnableSequence } from 'langchain/schema/runnable'
 import { DynamicTool } from 'langchain/tools'
-import {
-  AgentExecutor,
-  initializeAgentExecutorWithOptions
-} from 'langchain/agents'
-import { formatForOpenAIFunctions } from 'langchain/agents/format_scratchpad'
-import { OpenAIFunctionsAgentOutputParser } from 'langchain/agents/openai/output_parser'
-import { formatToOpenAIFunction } from 'langchain/tools'
-import { AgentStep, BaseMessage } from 'langchain/dist/schema'
 
 export const runtime = 'edge'
 
@@ -35,16 +20,14 @@ const {
   NEXT_PUBLIC_DEFAULT_MODEL_NAME
 } = process.env
 
+// JOBS API GERADE DEAKTIVIERT
 const jobTool = new DynamicTool({
   name: 'available-jobs',
   description: 'Gibt alle Jobs zurück, die derzeit offen sind.',
   func: async () => {
     console.log(`calling Jobs API`)
-
     const res = await fetch('/api/jobs/brz/').then(res => res.json())
-
     console.log('received data', res)
-
     return res
   }
 })
@@ -55,11 +38,8 @@ const jobStatsTool = new DynamicTool({
     'Liefert Informationen über Jobkategorien, Anzahl und Regionen der Jobs.',
   func: async () => {
     console.log(`calling Job Stats API`)
-
     const res = await fetch('/api/jobs/brz/stats').then(res => res.json())
-
     console.log('received data', res)
-
     return res
   }
 })
@@ -103,7 +83,11 @@ export async function POST(req: Request) {
     {chatHistory}
     --------------------------------------------------
     FRAGE:
-    [INST]{question}[/INST]
+    ${
+      settings.model_name === 'mistral-7b-instruct'
+        ? '[INST]{question}[/INST]'
+        : '{question}'
+    }
     --------------------------------------------------
     
     Antworte in der Sprache, die der User verwendet hat. Übersetzde den Kontext und die Antwort in die Sprache des Users.
@@ -126,11 +110,11 @@ export async function POST(req: Request) {
         topP: 0.9,
         verbose: true,
         streaming: true,
-        modelName: settings.modelName ?? NEXT_PUBLIC_DEFAULT_MODEL_NAME,
+        modelName: settings.model_name ?? NEXT_PUBLIC_DEFAULT_MODEL_NAME,
         openAIApiKey: OPENAI_API_KEY // Bei LocalAI nicht nötig (irgendwas definieren sonst akzeptiert langchain es nicht)
       },
       {
-        baseURL: settings.modelUrl ?? NEXT_PUBLIC_DEFAULT_MODEL_URL,
+        baseURL: settings.model_uri ?? NEXT_PUBLIC_DEFAULT_MODEL_URL,
         apiKey: OPENAI_API_KEY,
         timeout: 10000
       }
@@ -164,6 +148,7 @@ export async function POST(req: Request) {
       new StringOutputParser()
     ])
 
+    // VORBEREITUNG FÜR JOBS API
     // const modelWithTools = model.bind({
     //   functions: tools.map(tool => formatToOpenAIFunction(tool))
     // })
