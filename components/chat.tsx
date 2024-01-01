@@ -8,8 +8,8 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useChats } from '@/lib/hooks/use-chats'
-import { toast } from 'react-hot-toast'
 import { useCallback, useState } from 'react'
+import { useToast } from '@/components/ui/use-toast'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -18,6 +18,7 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { appendMessage, getChat } = useChats()
+  const { toast } = useToast()
 
   const currentChat = id ? getChat(id) : null
   const messages = currentChat ? currentChat.messages : initialMessages
@@ -41,15 +42,20 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     },
     onResponse(response) {
       if (response.status >= 400) {
-        toast.error(response.statusText)
+        toast({
+          title: 'Fehler',
+          description:
+            'Ein Fehler ist aufgetreten. Bitte versuche es später erneut'
+        })
       }
     },
     onFinish,
     onError(error) {
-      toast.error(
-        error.message ??
-          'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.'
-      )
+      toast({
+        title: 'Fehler',
+        description:
+          'Ein Fehler ist aufgetreten. Bitte versuche es später erneut'
+      })
     }
   })
 
