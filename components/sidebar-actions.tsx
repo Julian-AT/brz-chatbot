@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
-import { toast } from 'react-hot-toast'
 
 import { ServerActionResult, type Chat } from '@/lib/types'
 import {
@@ -22,6 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import { useToast } from '@/components/ui/use-toast'
 
 interface SidebarActionsProps {
   chat: Chat
@@ -32,6 +32,7 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
   const router = useRouter()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
+  const { toast } = useToast()
 
   return (
     <>
@@ -75,7 +76,11 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
                   setDeleteDialogOpen(false)
                   router.refresh()
                   router.push('/')
-                  toast.success('Chat deleted')
+                  toast({
+                    title: 'Chat gelöscht',
+                    description:
+                      'Du hast den Chat erfolgreich gelöscht. Er wird nun nicht mehr angezeigt.',
+                  })
                 })
               }}
             >
