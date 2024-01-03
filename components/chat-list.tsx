@@ -2,12 +2,20 @@ import { type Message } from 'ai'
 
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
+import { ScrollArea } from './ui/scroll-area'
+import { useEffect, useRef } from 'react'
 
 export interface ChatList {
   messages: Message[]
 }
 
 export function ChatList({ messages }: ChatList) {
+  const endOfMessagesRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
   if (!messages.length) {
     return null
   }
@@ -22,6 +30,7 @@ export function ChatList({ messages }: ChatList) {
           )}
         </div>
       ))}
+      <div ref={endOfMessagesRef} />
     </div>
   )
 }
