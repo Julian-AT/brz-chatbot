@@ -8,7 +8,7 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useChats } from '@/lib/hooks/use-chats'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useToast } from '@/components/ui/use-toast'
 import { useSettings } from '@/lib/hooks/use-settings'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -76,7 +76,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       {messages?.length ? (
         <div
           className={cn(
-            'pb-[200px] pt-4 md:pt-10 p-3 flex flex-col h-full w-full overflow-hidden',
+            'flex flex-col h-full w-full overflow-hidden ',
             className
           )}
         >
@@ -84,7 +84,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           {settings.bottom_glow ? (
             <div className="absolute bottom-0 inset-x-0 e w-3/4 z-0 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%,_rgba(173,_255,_0,_0)_100%)] mix-blend-lighten border-[35px] border-primary filter blur-[175px] rounded-full" />
           ) : null}
-          <ScrollArea>
+          <ScrollArea className="mx-1 my-5 overflow-auto">
             <ChatList messages={messages} />
           </ScrollArea>
           <ChatScrollAnchor trackVisibility={isLoading} />
