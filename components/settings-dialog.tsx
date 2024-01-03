@@ -25,11 +25,12 @@ import {
 } from './ui/form'
 import { useState } from 'react'
 import { useToast } from '@/components/ui/use-toast'
-import Balancer from 'react-wrap-balancer'
+import { Switch } from './ui/switch'
 
 const SettingsDialogSchema = z.object({
   model_uri: z.string().url({ message: 'Bitte gib eine valide URL an.' }),
-  model_name: z.string().min(1, 'Bitte gib einen validen Namen an.')
+  model_name: z.string().min(1, 'Bitte gib einen validen Namen an.'),
+  bottom_glow: z.boolean()
 })
 
 type SettingsDialogValues = z.infer<typeof SettingsDialogSchema>
@@ -50,9 +51,10 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
   function onSubmit(data: SettingsDialogValues) {
     setSetting('model_uri', data.model_uri)
     setSetting('model_name', data.model_name)
+    setSetting('bottom_glow', data.bottom_glow)
     toast({
       title: 'Einstellungen gespeichert',
-      description: 'Deine Einstellungen wurden erfolgreich gespeichert.'
+      description: 'Deine Einstellungen wurden gespeichert.'
     })
     setOpen(false)
   }
@@ -60,7 +62,7 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
   return (
     <Dialog {...form} open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl rounded-lg">
         <DialogHeader>
           <DialogTitle>Einstellungen</DialogTitle>
           <DialogDescription>
@@ -115,6 +117,26 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
                     </i>
                   </FormDescription>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="bottom_glow"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Glow Effekt</FormLabel>
+                    <FormDescription>
+                      Der Glow Effekt am unteren Rand des Chatfensters.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

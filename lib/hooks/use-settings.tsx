@@ -4,6 +4,7 @@ import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 interface UserSettings {
   model_uri: string
   model_name: string
+  bottom_glow: boolean
 }
 
 const { NEXT_PUBLIC_DEFAULT_MODEL_NAME, NEXT_PUBLIC_DEFAULT_MODEL_URL } =
@@ -11,7 +12,8 @@ const { NEXT_PUBLIC_DEFAULT_MODEL_NAME, NEXT_PUBLIC_DEFAULT_MODEL_URL } =
 
 const defaultSettings: UserSettings = {
   model_uri: NEXT_PUBLIC_DEFAULT_MODEL_NAME || 'https://api.openai.com/v1/',
-  model_name: NEXT_PUBLIC_DEFAULT_MODEL_URL || 'gpt-3.5-turbo'
+  model_name: NEXT_PUBLIC_DEFAULT_MODEL_URL || 'gpt-3.5-turbo',
+  bottom_glow: true
 }
 
 const SettingsContext = createContext<{
