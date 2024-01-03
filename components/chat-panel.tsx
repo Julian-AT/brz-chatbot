@@ -2,7 +2,6 @@ import { type UseChatHelpers } from 'ai/react'
 
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { FooterText } from '@/components/footer'
 import { useChats } from '@/lib/hooks/use-chats'
 import { Message } from 'ai'
 import { usePathname, useRouter } from 'next/navigation'
