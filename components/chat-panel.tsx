@@ -42,7 +42,7 @@ export function ChatPanel({
     <div className="sticky inset-x-0 bottom-0 w-full animate-in duration-300 ease-in-out peer-[[data-state=open]]:group-[]:lg:pl-[250px] peer-[[data-state=open]]:group-[]:xl:pl-[300px]">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="flex items-center justify-center h-12">
+        <div className="flex items-end justify-center h-12">
           {isLoading ? (
             <Button
               variant="outline"
@@ -67,7 +67,7 @@ export function ChatPanel({
             )
           )}
         </div>
-        <div className="w-full space-y-4 sm:px-4 sm:py-2 md:py-4">
+        <div className="w-full space-y-4 sm:px-4 sm:py-2 md:pb-4">
           <PromptForm
             onSubmit={async value => {
               if (!id) return console.log('no id')
@@ -82,6 +82,10 @@ export function ChatPanel({
 
               try {
                 appendMessage(id, message)
+                if (!path.includes('chat')) {
+                  router.push(`/chat/${id}`, { shallow: true, scroll: false })
+                  router.refresh()
+                }
                 await append(message, {
                   options: {
                     body: {
@@ -92,11 +96,6 @@ export function ChatPanel({
                 })
               } catch (error) {
                 console.error('Fehler beim Senden der Nachricht:', error)
-              }
-
-              if (!path.includes('chat')) {
-                router.push(`/chat/${id}`, { shallow: true, scroll: false })
-                router.refresh()
               }
             }}
             input={input}
