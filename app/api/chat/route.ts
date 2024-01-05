@@ -3,11 +3,12 @@ import { ChatOpenAI } from 'langchain/chat_models/openai'
 import { QdrantVectorStore } from 'langchain/vectorstores/qdrant'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { NextResponse } from 'next/server'
-import { DynamicTool } from 'langchain/tools'
+import { DynamicStructuredTool, DynamicTool } from 'langchain/tools'
 import { AgentExecutor, createOpenAIFunctionsAgent } from 'langchain/agents'
 import { createRetrieverTool } from 'langchain/tools/retriever'
 import { MessagesPlaceholder, ChatPromptTemplate } from 'langchain/prompts'
 import { AIMessage, ChatMessage, HumanMessage } from '@langchain/core/messages'
+import { z } from 'zod'
 
 export const runtime = 'edge'
 
@@ -22,20 +23,72 @@ const {
   JOB_API_VALIDATION_TOKEN
 } = process.env
 
-const jobTool = new DynamicTool({
+// hardcoded weil sonst dauert es min. 20sek bis die Daten geladen sind
+const jobProfiles = [
+  'BI/AI/Big Data/Data Science',
+  'Communications/HR/Legal/Controlling/Finance',
+  'Consulting',
+  'Facility Management',
+  'IT Architecture',
+  'IT Security',
+  'IT Support',
+  'Lehre / Trainee',
+  'Management',
+  'Operations/Application Management',
+  'Praktikum',
+  'Product/Solution Management',
+  'Project Management',
+  'Quality und Testing',
+  'SAP Development und Consulting',
+  'Software Development',
+  'Sonstige',
+  'System-, Netzwerk- und Datenbank-Management',
+  'Vertrieb/Business Partner Management'
+]
+
+const sliceArrayMaxTokens = (arr: string[], maxTokens: number) => {
+  let json = JSON.stringify(arr)
+  let tokenCount = json.split(/\s+/).length
+  if (tokenCount <= maxTokens) {
+    while (tokenCount > maxTokens && arr.length > 0) {
+      arr.pop()
+      json = JSON.stringify(arr)
+      tokenCount = json.split(/\s+/).length
+    }
+  }
+
+  return arr
+}
+
+const jobTool = new DynamicStructuredTool({
   name: 'available_jobs',
   description:
-    'Liefert spezifische Jobs zurück, die derzeit im Bundesrechenzentrum (BRZ) offen sind. Gib als Verweis auf weiter Jobs die Website "https://www.brz-jobs.at/Jobs" an',
-  func: async () => {
+    'Sucht nach spezifischen Jobs die derzeit im Bundesrechenzentrum (BRZ) offen sind. Liste für jeden Job die einzelnen Informationen in einer Markdown Liste auf. Für weitere generelle Informationen verweise auf die "https://www.brz-jobs.at/Jobs" Website',
+  schema: z.object({
+    textFilter: z
+      .string()
+      .optional()
+      .describe('Suchbegriff oder Jobnummer nach dem gesucht werden soll'),
+    categoryFilter: z
+      .enum(jobProfiles as any as [string, ...string[]])
+      .describe('Kategorie(n) der Job Profile die gesucht werden sollen')
+  }),
+  func: async ({ textFilter, categoryFilter }) => {
     console.log(`calling Jobs API`)
     const res = await fetch('https://brz-chatbot.vercel.app/api/jobs/brz', {
+      method: 'POST',
       headers: {
         'Content-type': 'application/json',
         Authorization: `Bearer ${JOB_API_VALIDATION_TOKEN}`
-      }
+      },
+      body: JSON.stringify({
+        textFilter,
+        categoryFilter
+      })
     }).then(res => res.json())
-    console.log('received data', res)
-    return res
+    const jobs = sliceArrayMaxTokens(res.jobs, 3072)
+    console.log('received data', jobs)
+    return JSON.stringify(jobs)
   },
   verbose: true
 })
@@ -43,7 +96,7 @@ const jobTool = new DynamicTool({
 const jobStatsTool = new DynamicTool({
   name: 'jobs_information',
   description:
-    'Liefert Informationen über Kategorien, Regionen und Anzahl der Verfügbaren Jobs im Bundesrechenzentrum (BRZ). Gib als Verweis auf weiter Jobs die Website "https://www.brz-jobs.at/Jobs" an',
+    'Liefert Informationen über Job-Profile, Regionen und Anzahl der Verfügbaren Jobs im Bundesrechenzentrum (BRZ).',
   func: async () => {
     console.log(`calling Job Stats API`)
     const res = await fetch(
@@ -54,7 +107,7 @@ const jobStatsTool = new DynamicTool({
           Authorization: `Bearer ${JOB_API_VALIDATION_TOKEN}`
         }
       }
-    ).then(res => res.json())
+    ).then(res => res.text())
     console.log('received data', res)
     return res
   },
@@ -76,7 +129,9 @@ const AGENT_SYSTEM_TEMPLATE = `Du bist ein hilfreicher Chatbot der ausschließli
 Befolge beim Beantworten der Fragen folgende Regeln:
 - Benutzte die Tools, die dir zur Verfügung gestellt werden
 - Verwende die richtige Sprache
-- Verwende das Markdown Format um deine Antworten zu formatieren
+- Formatiere Antworten in Markdown
+- Sei immer selbstsicher und gib Antworten die aus Tools erfolgen als definitive Antwort aus. 
+
 `
 
 export async function POST(req: Request) {
@@ -88,9 +143,6 @@ export async function POST(req: Request) {
 
     /* Destructure messages from body */
     const { messages, settings } = json
-
-    /* Format messages */
-    const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage)
 
     /* Get current message content */
     const currentMessageContent = messages[messages.length - 1].content
@@ -121,7 +173,7 @@ export async function POST(req: Request) {
 
     const model = new ChatOpenAI(
       {
-        temperature: 0.6,
+        temperature: 0.69,
         topP: 0.9,
         streaming: true,
         modelName: settings.model_name ?? DEFAULT_MODEL_NAME,

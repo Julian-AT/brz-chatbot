@@ -63,6 +63,83 @@ const fetchJobListData = async (): Promise<any> => {
   }
 }
 
+const windowSet = (page: any, name: any, value: any) =>
+  page.evaluateOnNewDocument(`
+    Object.defineProperty(window, '${name}', {
+      get() {
+        return '${value}'
+      }
+    })
+  `)
+
+const fetchJobListDataWithFilters = async (
+  textFilter: string,
+  categoryFilter: string[]
+): Promise<any> => {
+  try {
+    let browser: any
+    const isDev = process.env.NODE_ENV === 'development'
+    const options = await getOptions(isDev)
+
+    if (!isDev) {
+      browser = await puppeteer.launch(options)
+    } else {
+      const puppeteerRegular = require('puppeteer')
+      browser = await puppeteerRegular.launch({ headless: 'new' })
+    }
+
+    const page = await browser.newPage()
+    await page.goto(BRZ_JOBS_ENDPOINT as string)
+
+    console.log(textFilter, categoryFilter)
+
+    await page.evaluate(
+      (textFilter: string, categoryFilter: string[]) => {
+        const form = document.getElementsByClassName(
+          'jobs-filter'
+        )[0] as HTMLFormElement
+        if (textFilter && textFilter.length > 0) {
+          ;(document.getElementById('filter') as HTMLInputElement).setAttribute(
+            'value',
+            textFilter
+          )
+        }
+        if (categoryFilter && categoryFilter.length > 0) {
+          Array.from(form.elements as HTMLFormControlsCollection).map(elm => {
+            if (
+              elm.getAttribute('type') === 'checkbox' &&
+              categoryFilter.includes(
+                elm.previousElementSibling?.getAttribute('value') ?? ''
+              )
+            ) {
+              elm.setAttribute('checked', 'true')
+            }
+          })
+        }
+      },
+      textFilter,
+      categoryFilter
+    )
+
+    const text = await page.evaluate(
+      () => document.getElementById('filter')?.getAttribute('value')
+    )
+    console.log(text)
+
+    await page.evaluate(() => {
+      document.getElementById('submitFilter')?.click()
+    })
+
+    await page.waitForNavigation()
+
+    const jobListRaw = await page.evaluate(() => (window as any).jobList)
+    await browser.close()
+    return jobListRaw
+  } catch (err) {
+    console.error(err)
+    return null
+  }
+}
 interface Job {
   Id: number
   Title: string
@@ -118,5 +195,29 @@ export const getJobsAndStats = async () => {
   return {
     jobs,
     stats
+  }
+}
+
+export const getJobsWithFilters = async (
+  textFilter: string,
+  categoryFilter: string[]
+) => {
+  const jobListRaw = await fetchJobListDataWithFilters(
+    textFilter,
+    categoryFilter
+  )
+
+  if (!jobListRaw || !jobListRaw.model) {
+    return { jobs: [], stats: {} }
+  }
+
+  const jobs = parseJobs(jobListRaw.model.Jobs)
+
+  return {
+    filters: {
+      textFilter,
+      categoryFilter
+    },
+    jobs
   }
 }
