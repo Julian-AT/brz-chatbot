@@ -4,7 +4,6 @@ import { notFound, redirect } from 'next/navigation'
 import { useChats } from '@/lib/hooks/use-chats'
 import { Chat } from '@/components/chat'
 
-
 export interface ChatPageProps {
   params: {
     id: string

@@ -17,9 +17,9 @@ export async function GET(req: Request) {
       })
     }
 
-    const { jobs } = await getJobsAndStats()
+    const { stats } = await getJobsAndStats()
 
-    return new Response(JSON.stringify({ timestamp: new Date(), jobs }), {
+    return new Response(JSON.stringify({ timestamp: new Date(), stats }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json'

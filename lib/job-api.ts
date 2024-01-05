@@ -26,7 +26,7 @@ async function getOptions(isDev: boolean): Promise<Options> {
     options = {
       args: [],
       executablePath: exePath,
-      headless: true
+      headless: 'new'
     }
   } else {
     options = {
@@ -56,8 +56,6 @@ const fetchJobListData = async (): Promise<any> => {
     await page.goto(BRZ_JOBS_ENDPOINT as string)
     const jobListRaw = await page.evaluate(() => (window as any).jobList)
     await browser.close()
-
-    console.log('jobListRaw', jobListRaw)
     return jobListRaw
   } catch (err) {
     console.error(err)
