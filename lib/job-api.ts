@@ -63,15 +63,6 @@ const fetchJobListData = async (): Promise<any> => {
   }
 }
 
-const windowSet = (page: any, name: any, value: any) =>
-  page.evaluateOnNewDocument(`
-    Object.defineProperty(window, '${name}', {
-      get() {
-        return '${value}'
-      }
-    })
-  `)
-
 const fetchJobListDataWithFilters = async (
   textFilter: string,
   categoryFilter: string[]
@@ -90,8 +81,6 @@ const fetchJobListDataWithFilters = async (
 
     const page = await browser.newPage()
     await page.goto(BRZ_JOBS_ENDPOINT as string)
-
-    console.log(textFilter, categoryFilter)
 
     await page.evaluate(
       (textFilter: string, categoryFilter: string[]) => {
@@ -124,7 +113,6 @@ const fetchJobListDataWithFilters = async (
     const text = await page.evaluate(
       () => document.getElementById('filter')?.getAttribute('value')
     )
-    console.log(text)
 
     await page.evaluate(() => {
       document.getElementById('submitFilter')?.click()
@@ -144,6 +132,7 @@ interface Job {
   Id: number
   Title: string
   Location: string
+  SubTitle: string
   Date: string
   UrlEncodedTitle: string
 }
@@ -152,6 +141,7 @@ const parseJobs = (jobs: Job[]) => {
   return jobs.map(job => ({
     id: job.Id,
     title: job.Title,
+    description: job.SubTitle,
     location: job.Location,
     date: job.Date,
     url: `https://www.brz-jobs.at/Job/${job.Id}/${job.UrlEncodedTitle}`

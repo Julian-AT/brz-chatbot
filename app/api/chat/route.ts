@@ -46,31 +46,20 @@ const jobProfiles = [
   'Vertrieb/Business Partner Management'
 ]
 
-const sliceArrayMaxTokens = (arr: string[], maxTokens: number) => {
-  let json = JSON.stringify(arr)
-  let tokenCount = json.split(/\s+/).length
-  if (tokenCount <= maxTokens) {
-    while (tokenCount > maxTokens && arr.length > 0) {
-      arr.pop()
-      json = JSON.stringify(arr)
-      tokenCount = json.split(/\s+/).length
-    }
-  }
-
-  return arr
-}
-
 const jobTool = new DynamicStructuredTool({
-  name: 'available_jobs',
+  name: 'job_search',
   description:
-    'Sucht nach spezifischen Jobs die derzeit im Bundesrechenzentrum (BRZ) offen sind. Liste für jeden Job die einzelnen Informationen in einer Markdown Liste auf. Für weitere generelle Informationen verweise auf die "https://www.brz-jobs.at/Jobs" Website',
+    'Sucht nach spezifischen Jobs die derzeit im Bundesrechenzentrum (BRZ) offen sind. Jeder Job besetht aus einem Namen, einer URL, einem Standort und einem Erstellugsdatum. Liste pro Job zuerst den Titel und dann in einer Markdown Liste alle zusätzlichen Informationen auf (Beschreibung, Erstellungsdatum, Standort und URL).',
   schema: z.object({
     textFilter: z
       .string()
       .optional()
       .describe('Suchbegriff oder Jobnummer nach dem gesucht werden soll'),
     categoryFilter: z
-      .enum(jobProfiles as any as [string, ...string[]])
+      .string()
+      .refine(profile => jobProfiles.includes(profile))
+      .array()
+      .min(1)
       .describe('Kategorie(n) der Job Profile die gesucht werden sollen')
   }),
   func: async ({ textFilter, categoryFilter }) => {
@@ -86,8 +75,7 @@ const jobTool = new DynamicStructuredTool({
         categoryFilter
       })
     }).then(res => res.json())
-    const jobs = sliceArrayMaxTokens(res.jobs, 3072)
-    console.log('received data', jobs)
+    const jobs = res.jobs?.slice(10) // max 10 neuste Jobs
     return JSON.stringify(jobs)
   },
   verbose: true
@@ -96,7 +84,7 @@ const jobTool = new DynamicStructuredTool({
 const jobStatsTool = new DynamicTool({
   name: 'jobs_information',
   description:
-    'Liefert Informationen über Job-Profile, Regionen und Anzahl der Verfügbaren Jobs im Bundesrechenzentrum (BRZ).',
+    'Liefert Informationen über Job-Profile, Regionen und Anzahl der Verfügbaren Jobs im Bundesrechenzentrum (BRZ). Sag am Ende, dass du dem Nutzer Informationen über konkrete Jobs liefern kannst wenn er z.B. nach einer Kategorie oder einem Begriff fragt.',
   func: async () => {
     console.log(`calling Job Stats API`)
     const res = await fetch(
@@ -124,14 +112,14 @@ const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
   }
 }
 
-const AGENT_SYSTEM_TEMPLATE = `Du bist ein hilfreicher Chatbot der ausschließlich Fragen über das Bundesrechenzentrum (BRZ) beantworten kann.
+const AGENT_SYSTEM_TEMPLATE = `Du bist ein hilfreicher Chatbot der Fragen über das Bundesrechenzentrum (BRZ) beantwortet.
+
+Du hast zusätzlich Zugriff auf einige Tools, die dir helfen an relevante Informationen zu kommen.
 
 Befolge beim Beantworten der Fragen folgende Regeln:
 - Benutzte die Tools, die dir zur Verfügung gestellt werden
-- Verwende die richtige Sprache
+- Verwende die Sprache des Users
 - Formatiere Antworten in Markdown
-- Sei immer selbstsicher und gib Antworten die aus Tools erfolgen als definitive Antwort aus. 
-
 `
 
 export async function POST(req: Request) {
