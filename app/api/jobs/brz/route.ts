@@ -1,10 +1,49 @@
-import { getJobList, getJobs } from '@/lib/job-api'
+import { getJobsAndStats } from '@/lib/job-api'
+import fs from 'fs'
 
 export async function GET(req: Request) {
   try {
-    const joblist = await getJobs()
-    return Response.json({ joblist })
+    const authHeader = req.headers.get('Authorization')
+    if (
+      !authHeader ||
+      !authHeader.startsWith('Bearer ') ||
+      !isValidToken(authHeader.split(' ')[1])
+    ) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    }
+
+    const { jobs, stats } = await getJobsAndStats()
+
+    fs.writeFileSync(
+      'public/jobs.json',
+      JSON.stringify({ ...jobs, timestamp: Date.now() }, null, '\t')
+    )
+    fs.writeFileSync(
+      'public/stats.json',
+      JSON.stringify({ ...stats, timestamp: Date.now() }, null, '\t')
+    )
+
+    return new Response(JSON.stringify({ jobs, stats }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   } catch (e: any) {
-    return Response.json({ error: e.message }, { status: 500 })
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   }
+}
+
+function isValidToken(token: string) {
+  return token === process.env.JOB_API_VALIDATION_TOKEN
 }
