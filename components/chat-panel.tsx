@@ -57,7 +57,16 @@ export function ChatPanel({
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  onClick={() => reload()}
+                  onClick={() =>
+                    reload({
+                      options: {
+                        body: {
+                          id,
+                          settings
+                        }
+                      }
+                    })
+                  }
                   className="bg-background border-border"
                 >
                   <IconRefresh className="mr-2" />
@@ -83,7 +92,7 @@ export function ChatPanel({
               try {
                 appendMessage(id, message)
                 if (!path.includes('chat')) {
-                  router.push(`/chat/${id}`, { shallow: true, scroll: false })
+                  router.push(`/chat/${id}`, { scroll: false })
                   router.refresh()
                 }
                 await append(message, {
