@@ -33,7 +33,7 @@ export function ChatPanel({
   setInput,
   messages
 }: ChatPanelProps) {
-  const { appendMessage } = useChats()
+  const { appendMessage, removeMessage } = useChats()
   const router = useRouter()
   const path = usePathname()
   const { settings } = useSettings()
@@ -57,7 +57,9 @@ export function ChatPanel({
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  onClick={() =>
+                  onClick={() => {
+                    if (!id) return console.log('no id')
+                    removeMessage(id, messages[messages.length - 1].id)
                     reload({
                       options: {
                         body: {
@@ -66,7 +68,7 @@ export function ChatPanel({
                         }
                       }
                     })
-                  }
+                  }}
                   className="bg-background border-border"
                 >
                   <IconRefresh className="mr-2" />
