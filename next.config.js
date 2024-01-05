@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  reactStrictMode: true
+  reactStrictMode: true,
+  experimental: {
+    serverComponentsExternalPackages: ['puppeteer-core', '@sparticuz/chromium']
+  }
 }
