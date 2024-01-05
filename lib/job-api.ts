@@ -1,3 +1,6 @@
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
+
 const { BRZ_JOBS_ENDPOINT } = process.env
 
 const exePath =
@@ -7,8 +10,18 @@ const exePath =
       ? '/usr/bin/google-chrome'
       : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
-async function getOptions(isDev) {
-  let options
+interface Options {
+  args: string[]
+  executablePath: string
+  headless: boolean | 'new'
+  defaultViewport?: {
+    width: number
+    height: number
+  }
+}
+
+async function getOptions(isDev: boolean): Promise<Options> {
+  let options: Options
   if (isDev) {
     options = {
       args: [],
@@ -17,35 +30,31 @@ async function getOptions(isDev) {
     }
   } else {
     options = {
-      args: chrome.args,
-      executablePath: await chrome.executablePath,
-      headless: chrome.headless
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      defaultViewport: chromium.defaultViewport
     }
   }
   return options
 }
 
-const fetchJobListData = async () => {
+const fetchJobListData = async (): Promise<any> => {
   try {
-    let browser
-    if (process.env.NODE_ENV !== 'development') {
-      const chromium = require('@sparticuz/chromium')
-      chromium.setGraphicsMode = false
-      const puppeteer = require('puppeteer-core')
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless
-      })
-    } else {
-      const puppeteer = require('puppeteer')
-      browser = await puppeteer.launch({ headless: 'new' })
-    }
-    const page = await browser.newPage()
+    let browser: any
+    const isDev = process.env.NODE_ENV === 'development'
+    const options = await getOptions(isDev)
 
-    await page.goto(BRZ_JOBS_ENDPOINT)
-    const jobListRaw = await page.evaluate(() => jobList)
+    if (!isDev) {
+      browser = await puppeteer.launch(options)
+    } else {
+      const puppeteerRegular = require('puppeteer')
+      browser = await puppeteerRegular.launch({ headless: true })
+    }
+
+    const page = await browser.newPage()
+    await page.goto(BRZ_JOBS_ENDPOINT as string)
+    const jobListRaw = await page.evaluate(() => (window as any).jobList)
     await browser.close()
 
     console.log('jobListRaw', jobListRaw)
@@ -56,7 +65,15 @@ const fetchJobListData = async () => {
   }
 }
 
-const parseJobs = jobs => {
+interface Job {
+  Id: number
+  Title: string
+  Location: string
+  Date: string
+  UrlEncodedTitle: string
+}
+
+const parseJobs = (jobs: Job[]) => {
   return jobs.map(job => ({
     id: job.Id,
     title: job.Title,
@@ -66,7 +83,18 @@ const parseJobs = jobs => {
   }))
 }
 
-const parseStats = jobList => {
+interface JobList {
+  RegionsViewModel: {
+    Regions: Array<{
+      Text: string
+      SubRegions: Array<{ Text: string }>
+    }>
+  }
+  JobProfiles: Array<{ Text: string }>
+  TotalJobsCount: number
+}
+
+const parseStats = (jobList: JobList) => {
   const { RegionsViewModel, JobProfiles, TotalJobsCount } = jobList
 
   return {

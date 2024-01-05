@@ -7,12 +7,11 @@ interface UserSettings {
   bottom_glow: boolean
 }
 
-const { NEXT_PUBLIC_DEFAULT_MODEL_NAME, NEXT_PUBLIC_DEFAULT_MODEL_URL } =
-  process.env
+const { DEFAULT_MODEL_NAME, DEFAULT_MODEL_URL } = process.env
 
 const defaultSettings: UserSettings = {
-  model_uri: NEXT_PUBLIC_DEFAULT_MODEL_NAME || 'https://api.openai.com/v1/',
-  model_name: NEXT_PUBLIC_DEFAULT_MODEL_URL || 'gpt-3.5-turbo',
+  model_uri: DEFAULT_MODEL_NAME || 'https://api.openai.com/v1/',
+  model_name: DEFAULT_MODEL_URL || 'gpt-3.5-turbo',
   bottom_glow: true
 }
 
