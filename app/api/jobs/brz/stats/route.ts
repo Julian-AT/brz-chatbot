@@ -17,7 +17,14 @@ export async function GET(req: Request) {
       })
     }
 
-    const { stats } = await getJobsAndStats()
+    const jobData = await getJobsAndStats()
+    if (!jobData)
+      return new Response(JSON.stringify({ error: 'Could not fetch jobs' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+    const { stats } = jobData
 
     return new Response(JSON.stringify({ timestamp: new Date(), stats }), {
       status: 200,
