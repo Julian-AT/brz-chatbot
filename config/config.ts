@@ -1,4 +1,3 @@
-import { IconGitHub, IconHTL } from '@/components/ui/icons'
 import { SiteConfig } from 'types'
 
 export const siteConfig: SiteConfig = {
