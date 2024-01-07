@@ -19,6 +19,7 @@ interface ChatContextType {
   removeChat: (id: string) => void
   clearChats: () => void
   appendMessage: (chatId: string, message: Message) => void
+  removeMessage: (chatId: string, messageId: string) => void
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -29,7 +30,8 @@ const ChatContext = createContext<ChatContextType>({
   saveChat: () => {},
   removeChat: () => {},
   clearChats: () => {},
-  appendMessage: () => {}
+  appendMessage: () => {},
+  removeMessage: () => {}
 })
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({
@@ -102,6 +104,29 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
     [setChats]
   )
 
+  const removeMessage = useCallback(
+    (chatId: string, messageId: string) => {
+      setChats(currentChats => {
+        if (!chatId || !messageId) return currentChats ?? []
+
+        const updatedChats: Chat[] = currentChats ?? []
+        const chatIndex = updatedChats.findIndex(c => c.id === chatId)
+        if (chatIndex !== -1) {
+          const updatedChat = {
+            ...updatedChats[chatIndex],
+            messages: updatedChats[chatIndex].messages.filter(
+              m => m.id !== messageId
+            )
+          }
+          updatedChats[chatIndex] = updatedChat
+        }
+
+        return updatedChats
+      })
+    },
+    [setChats]
+  )
+
   return (
     <ChatContext.Provider
       value={{
@@ -112,7 +137,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         saveChat,
         removeChat,
         clearChats,
-        appendMessage
+        appendMessage,
+        removeMessage
       }}
     >
       {children}
