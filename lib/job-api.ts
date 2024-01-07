@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer-core'
 import chromium from '@sparticuz/chromium'
+import { JobData } from '@/types'
 
 const { BRZ_JOBS_ENDPOINT } = process.env
 
@@ -49,7 +50,7 @@ const fetchJobListData = async (): Promise<any> => {
       browser = await puppeteer.launch(options)
     } else {
       const puppeteerRegular = require('puppeteer')
-      browser = await puppeteerRegular.launch({ headless: true })
+      browser = await puppeteerRegular.launch({ headless: 'new' })
     }
 
     const page = await browser.newPage()
@@ -172,12 +173,9 @@ const parseStats = (jobList: JobList) => {
   }
 }
 
-export const getJobsAndStats = async () => {
+export const getJobsAndStats = async (): Promise<JobData | undefined> => {
   const jobListRaw = await fetchJobListData()
-
-  if (!jobListRaw || !jobListRaw.model) {
-    return { jobs: [], stats: {} }
-  }
+  if (!jobListRaw || !jobListRaw.model) return undefined
 
   const jobs = parseJobs(jobListRaw.model.Jobs)
   const stats = parseStats(jobListRaw.model)
@@ -185,7 +183,7 @@ export const getJobsAndStats = async () => {
   return {
     jobs,
     stats
-  }
+  } as JobData
 }
 
 export const getJobsWithFilters = async (
