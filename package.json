@@ -31,6 +31,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@sparticuz/chromium": "^119.0.2",
+    "@tanstack/react-table": "^8.11.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/og": "^0.5.20",
     "ai": "^2.2.31",
