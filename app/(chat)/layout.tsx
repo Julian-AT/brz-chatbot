@@ -1,5 +1,6 @@
+import { ChatHistory } from '@/components/chat-history'
 import { SidebarDesktop } from '@/components/sidebar-desktop'
-import { Toaster } from '@/components/ui/toaster'
+import { SidebarMobile } from '@/components/sitebar-mobile'
 import { cn } from '@/lib/utils'
 import { Inter } from 'next/font/google'
 
@@ -13,7 +14,7 @@ interface ChatLayoutProps {
   children: React.ReactNode
 }
 
-export default async function ChatLayout({ children }: ChatLayoutProps) {
+export default function ChatLayout({ children }: ChatLayoutProps) {
   return (
     <div
       className={cn(
@@ -23,10 +24,14 @@ export default async function ChatLayout({ children }: ChatLayoutProps) {
     >
       {/* @ts-ignore */}
       <SidebarDesktop />
-      <div className="relative w-full overflow-auto duration-300 ease-in-out border animate-in bg-background lg:rounded-xl border-border lg:m-3">
-        <div className="z-10 h-full">{children}</div>
-        {/* <div className="sticky w-3/4 z-0 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%,_rgba(173,_255,_0,_0)_100%)] mix-blend-lighten border-[35px] border-primary filter blur-[175px] rounded-full" /> */}
-        <Toaster />
+
+      <div className="relative w-full pb-5 duration-300 ease-in-out lg:border animate-in bg-background lg:rounded-xl lg:border-border lg:m-3">
+        <div className="absolute top-0 left-0 hidden m-3 mr-0 md:flex lg:hidden">
+          <SidebarMobile>
+            <ChatHistory />
+          </SidebarMobile>
+        </div>
+        {children}
       </div>
     </div>
   )

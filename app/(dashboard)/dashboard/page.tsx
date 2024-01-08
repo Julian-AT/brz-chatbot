@@ -1,19 +1,7 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { useSettings } from '@/lib/hooks/use-settings'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+import { DashboardHeader } from '@/components/dashboard/header'
+import { DashboardShell } from '@/components/dashboard/shell'
 import {
   Form,
   FormControl,
@@ -22,10 +10,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from './ui/form'
-import { useState } from 'react'
+} from '@/components/ui/form'
 import { useToast } from '@/components/ui/use-toast'
-import { Switch } from './ui/switch'
+import { Switch } from '@/components/ui/switch'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { useSettings } from '@/lib/hooks/use-settings'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const SettingsDialogSchema = z.object({
   model_uri: z.string().url({ message: 'Bitte gib eine valide URL an.' }),
@@ -37,9 +30,8 @@ type SettingsDialogValues = z.infer<typeof SettingsDialogSchema>
 
 export interface SettingsDialogProps extends React.ComponentProps<'div'> {}
 
-export function SettingsDialog({ className, children }: SettingsDialogProps) {
+export default function DashboardPage() {
   const { toast } = useToast()
-  const [open, setOpen] = useState(false)
   const { settings, setSetting } = useSettings()
 
   const form = useForm<SettingsDialogValues>({
@@ -49,6 +41,9 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
   })
 
   function onSubmit(data: SettingsDialogValues) {
+    toast({
+      title: 'Einstellungen gespeichert'
+    })
     setSetting('model_uri', data.model_uri)
     setSetting('model_name', data.model_name)
     setSetting('bottom_glow', data.bottom_glow)
@@ -56,19 +51,15 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
       title: 'Einstellungen gespeichert',
       description: 'Deine Einstellungen wurden gespeichert.'
     })
-    setOpen(false)
   }
 
   return (
-    <Dialog {...form} open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl rounded-lg">
-        <DialogHeader>
-          <DialogTitle>Einstellungen</DialogTitle>
-          <DialogDescription>
-            Hier kannst du deine Einstellungen bearbeiten.
-          </DialogDescription>
-        </DialogHeader>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Einstellungen"
+        text="Einstellungen des Chatbots"
+      ></DashboardHeader>
+      <div className="px-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -144,12 +135,16 @@ export function SettingsDialog({ className, children }: SettingsDialogProps) {
               Notiz: Du brauchst keinen eigenen OpenAI API Key, falls du OpenAI
               als Provider nutzt.
             </div>
-            <Button type="submit" className="right-0 border">
+            <Button
+              type="submit"
+              className="right-0 border"
+              disabled={form.control._formValues === settings}
+            >
               Änderungen Speichern
             </Button>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </DashboardShell>
   )
 }
