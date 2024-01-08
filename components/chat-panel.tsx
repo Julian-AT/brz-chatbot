@@ -33,15 +33,18 @@ export function ChatPanel({
   setInput,
   messages
 }: ChatPanelProps) {
-  const { appendMessage, removeMessage } = useChats()
+  const { appendMessage, removeMessage, saveChat } = useChats()
   const router = useRouter()
   const path = usePathname()
   const { settings } = useSettings()
 
   return (
-    <div className="sticky inset-x-0 bottom-0 w-full animate-in duration-300 ease-in-out peer-[[data-state=open]]:group-[]:lg:pl-[250px] peer-[[data-state=open]]:group-[]:xl:pl-[300px]">
+    <div
+      key={id}
+      className="sticky inset-x-0 bottom-0 w-full animate-in duration-300 ease-in-out peer-[[data-state=open]]:group-[]:lg:pl-[250px] peer-[[data-state=open]]:group-[]:xl:pl-[300px]"
+    >
       <ButtonScrollToBottom />
-      <div className="mx-auto sm:max-w-2xl sm:px-4">
+      <div className="mx-auto sm:max-w-2xl ">
         <div className="flex items-end justify-center h-12">
           {isLoading ? (
             <Button
@@ -59,7 +62,8 @@ export function ChatPanel({
                   variant="outline"
                   onClick={() => {
                     if (!id) return console.log('no id')
-                    removeMessage(id, messages[messages.length - 1].id)
+                    const message = messages[messages.length - 1]
+                    removeMessage(id, message.id)
                     reload({
                       options: {
                         body: {
@@ -78,10 +82,11 @@ export function ChatPanel({
             )
           )}
         </div>
-        <div className="w-full space-y-4 sm:px-4 sm:py-2 md:pb-4">
+        <div className="w-full pt-2 space-y-4 sm:px-4 sm:py-2 md:pb-4">
           <PromptForm
             onSubmit={async value => {
               if (!id) return console.log('no id')
+
               const messageId = nanoid(21)
 
               const message: Message = {

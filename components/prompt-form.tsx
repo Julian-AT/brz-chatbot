@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/tooltip'
 import { IconSubmit } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
+import { SidebarMobile } from './sitebar-mobile'
+import { ChatHistory } from './chat-history'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
@@ -44,7 +46,15 @@ export function PromptForm({
       }}
       ref={formRef}
     >
-      <div className="relative flex flex-col justify-center w-full h-24 pr-16 overflow-hidden border-t sm:h-full max-h-60 grow bg-background sm:rounded-md sm:border border-border">
+      <div className="relative flex items-center w-full h-24 overflow-hidden border-t sm:h-full max-h-60 bg-background sm:rounded-md sm:border border-border">
+        {/* Sidebar Button */}
+        <div className="flex items-center justify-center w-16 h-16 p-2 md:hidden">
+          <SidebarMobile>
+            <ChatHistory />
+          </SidebarMobile>
+        </div>
+
+        {/* Input */}
         <Textarea
           ref={inputRef}
           tabIndex={0}
@@ -54,9 +64,11 @@ export function PromptForm({
           onChange={e => setInput(e.target.value)}
           placeholder="Sende eine Nachricht"
           spellCheck={false}
-          className="min-h-full w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className="flex-grow min-h-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />
-        <div className="absolute right-0 flex items-center w-16 h-16 p-2 ">
+
+        {/* Send Button */}
+        <div className="flex items-center justify-center w-16 h-16 p-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -64,7 +76,7 @@ export function PromptForm({
                 disabled={isLoading || input === ''}
                 className="w-full h-full border bg-primary rounded-xl"
               >
-                <IconSubmit className="absolute w-6 h-6" />
+                <IconSubmit className="w-6 h-6" />
                 <span className="sr-only">Sende eine Nachricht.</span>
               </Button>
             </TooltipTrigger>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { SidebarList } from '@/components/sidebar-list'
 
-export async function ChatHistory() {
+export function ChatHistory() {
   return (
     <div className="flex flex-col h-full bg-background">
       <React.Suspense
