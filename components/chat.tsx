@@ -27,8 +27,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   const onFinish = useCallback(
     async (message: Message) => {
-      console.log('onFinish', message)
-
       if (message && id) {
         appendMessage(id, message)
       }
@@ -80,15 +78,20 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             className
           )}
         >
-          {settings.bottom_glow}
           {settings.bottom_glow ? (
-            <div className="absolute bottom-0 inset-x-0 e w-3/4 z-0 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%,_rgba(173,_255,_0,_0)_100%)] mix-blend-lighten border-[35px] border-primary filter blur-[175px] rounded-full" />
+            <div className="absolute bottom-0 inset-x-0 e w-3/4 z-10 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%,_rgba(173,_255,_0,_0)_100%)] mix-blend-lighten border-[35px] border-primary filter blur-[175px] rounded-full" />
           ) : null}
           <ScrollArea className="mx-1 my-5 overflow-auto">
-            <ChatList messages={messages} />
+            <ChatList
+              messages={messages}
+              initialMessageCount={
+                currentChat ? currentChat.messages.length : 0
+              }
+              isLoading={isLoading}
+            />
           </ScrollArea>
           <ChatScrollAnchor trackVisibility={isLoading} />
-          <div className="absolute bottom-0 w-full">
+          <div className="absolute bottom-0 z-20 w-full">
             <ChatScrollAnchor trackVisibility={isLoading} />
             <ChatPanel
               id={id}

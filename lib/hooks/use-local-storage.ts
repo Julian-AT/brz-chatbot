@@ -36,7 +36,6 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   const set = useCallback(
     (newValue: T | ((currentValue: T | undefined) => T)) => {
       try {
-        // Hier wird überprüft, ob newValue eine Funktion ist
         const valueToStore =
           newValue instanceof Function ? newValue(value) : newValue
         setValue(valueToStore)

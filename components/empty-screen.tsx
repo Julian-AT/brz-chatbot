@@ -27,15 +27,15 @@ export function EmptyScreen({ children }: EmptyScreenProps) {
           </Balancer>
         </div>
         <div className="hidden mb-10 md:inline">{children}</div>
-        <div className="w-3/4 mx-auto pb-32 md:pb-0">
+        <div className="w-3/4 pb-32 mx-auto md:pb-0">
           <Cards />
         </div>
       </div>
-      <div className="absolute bottom-0 inline w-full mt-5 md:hidden">
+      <div className="absolute bottom-0 z-20 inline w-full mt-5 md:hidden">
         {children}
       </div>
       {settings.bottom_glow ? (
-        <div className="absolute bottom-0 inset-x-0 e w-3/4 z-100 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%, _rgba(173,_255,_0,_0)_100%))] mix-blend-lighten border-[35px] border-red-600 filter blur-[175px] rounded-full" />
+        <div className="absolute bottom-0 inset-x-0 e w-3/4 z-10 h-10 mx-auto bg-[radial-gradient(50%_50%_at_50%_50%,_rgba(185,_30,_35,_0.8)_46.35%, _rgba(173,_255,_0,_0)_100%))] mix-blend-lighten border-[35px] border-red-600 filter blur-[175px] rounded-full" />
       ) : null}
     </div>
   )
