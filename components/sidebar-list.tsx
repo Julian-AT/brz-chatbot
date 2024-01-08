@@ -108,7 +108,6 @@ export function SidebarList() {
         </Button>
 
         <Button
-          disabled={chats ? chats.length === 0 : true}
           className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground"
         >
           <Link
