@@ -1,22 +1,14 @@
 'use client'
 
 import * as React from 'react'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
 import { motion } from 'framer-motion'
-
 import { buttonVariants } from '@/components/ui/button'
-import { IconMessage, IconUsers } from '@/components/ui/icons'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import { IconMessage } from '@/components/ui/icons'
 import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
 interface SidebarItemProps {
   index: number
@@ -35,7 +27,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
 
   return (
     <motion.div
-      className="relative h-12"
+      className="relative w-full"
       variants={{
         initial: {
           height: 0,
@@ -57,18 +49,18 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         href={chat.path}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'group w-full px-4 transition-colors hover:bg-background-secondary h-12',
-          isActive && 'pr-12 font-medium  bg-background-secondary'
+          'relative group w-full transition-colors hover:bg-background-secondary h-12 my-1',
+          isActive && 'pr-12 font-medium bg-background-secondary'
         )}
       >
         <IconMessage className="mr-2 w-5 h-5 mb-[3px]" />
         <div
-          className="relative flex-1 overflow-hidden break-all select-none max-h-12 text-ellipsis"
+          className="relative flex-1 overflow-hidden select-none"
           title={chat.title}
         >
-          <span className="whitespace-nowrap">
+          <span className="truncate">
             {shouldAnimate ? (
-              chat.title.split('').map((character: any, index: any) => (
+              chat.title.split('').map((character, index) => (
                 <motion.span
                   key={index}
                   variants={{
