@@ -7,19 +7,48 @@ import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
 import { Toaster } from '@/components/ui/toaster'
 import moment from 'moment'
+import { siteConfig } from '@/config/config'
 
 moment.locale('de')
 
 export const metadata: Metadata = {
   title: {
-    default: 'BRZ Chatbot',
-    template: `%s - BRZ Chatbot`
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`
   },
-  description: 'AI Chatbot für das Bundesrechenzentrum',
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png'
+  description: siteConfig.description,
+  keywords: [
+    'Bundesrechenzentrum Chatbot',
+    'BRZ Chatbot',
+    'Bundesrechenzentrum',
+    'BRZ',
+    'Chatbot'
+  ],
+  authors: [
+    {
+      name: 'Julian S.',
+      url: 'https://github.com/julian-at'
+    }
+  ],
+  creator: 'shadcn',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' }
+  ],
+  openGraph: {
+    type: 'website',
+    locale: 'de',
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [`${siteConfig.url}/og.jpg`],
+    creator: '@julian-at'
   }
 }
 
