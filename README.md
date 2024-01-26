@@ -1,5 +1,9 @@
 <div align="center"> <a href="https://brz-chatbot.vercel.app/"> <img src="https://brz-chatbot.vercel.app/opengraph-image.png" alt="BRZ Chatbot"> </a> <h1>Bundesrechenzentrum Chatbot</h1> </div> <p align="center">  Open-Source-Chatbot, entwickelt mit NextJS 14, unterstützt durch OpenAI/LocalAI/HF Inference API, QDrant & LangChainJS. </p> <p align="center"> <a href="#features"><strong>Features</strong></a> · <a href="#model-provider"><strong>Modellanbieter</strong></a> · <a href="#lokal-nutzen"><strong>Lokale Nutzung</strong></a> </p> <br/>
 
+<div align="center">
+<i>Dieses Projekt ist ein unabhängiges Demo-Projekt und steht in keiner Verbindung<br> zum Bundesrechenzentrum (BRZ) oder zu anderen staatlichen Einrichtungen.</i>
+</div>
+
 Features
 --------
 
