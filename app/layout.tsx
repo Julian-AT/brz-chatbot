@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
 import { Toaster } from '@/components/ui/toaster'
+import moment from 'moment'
+
+moment.locale('de')
 
 export const metadata: Metadata = {
   title: {
