@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center"> <a href="https://brz-chatbot.vercel.app/"> <img src="https://brz-chatbot.vercel.app/opengraph-image.png" alt="BRZ Chatbot"> </a> <h1>Bundesrechenzentrum Chatbot</h1> </div> <p align="center">  Open-Source-Chatbot, entwickelt mit NextJS 14, unterstützt durch OpenAI/LocalAI/HF Inference API, QDrant & LangChainJS. </p> <p align="center"> <a href="#features"><strong>Features</strong></a> · <a href="#model-provider"><strong>Modellanbieter</strong></a> · <a href="#lokal-nutzen"><strong>Lokale Nutzung</strong></a> </p> <br/>
 
-## Getting Started
+Features
+--------
 
-First, run the development server:
+*   **Echtzeit-Zugriff** auf die [BRZ-Jobs-Website](https://www.brz-jobs.at/Jobs).
+*   Bereitstellung von **Kontextinformationen** von der [offiziellen BRZ-Website](https://brz.gv.at/).
+*   Unterstützung für **mehrere AI-Modelle**: OpenAI (Standard), LocalAI, Ollama, Hugging Face\*\*.
+*   **Keine Datenbank erforderlich**: Alle Daten (Chats, Einstellungen) werden lokal im LocalStorage gespeichert.
+*   Zugriff auf über **6000 referenzierbare Vektoren**, basierend auf der [BRZ-Website](https://brz.gv.at/). 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> **Hinweis:** Das Modell muss mit [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling) kompatibel sein.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Modellanbieter
+--------------
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Standardmäßig ist GPT-3.5-Turbo als AI-Modell eingestellt. Es ist jedoch möglich das Modell durch folgende Einstellungen zu ändern.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+*   **API-Server-URL** unter `Dashboard -> Einstellungen -> API Server URL`
+*   **Modellname** unter `Dashboard -> Einstellungen -> Modell Name`
 
-## Learn More
+> Wichtig: Um alle Funktionen des Chatbots vollständig nutzen zu können, muss das gewählte Modell [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling) unterstützen.
 
-To learn more about Next.js, take a look at the following resources:
+Lokale Nutzung
+--------------
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Befolge diesen Schritte, um den Chatbot lokal zu nutzen:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1.  **Repository klonen:** `git clone https://github.com/Julian-AT/brz-chatbot` oder als ZIP herunterladen und extrahieren.
+2.  **Ins Verzeichnis wechseln** und `npm install` ausführen.
+3.  **Environment-Variablen setzen:** Alle erforderlichen Variablen sind in `.env.example`.
+4.  **Server starten:** Mit dem Befehl `npm run dev` starten.
+5.  **Zugriff auf die App:** Die App ist nun unter [localhost:3000](http://localhost:3000/) erreichbar.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+> Achtung: Die `.env`\-Datei sollte niemals in einem öffentlichen Repository veröffentlicht werden.
