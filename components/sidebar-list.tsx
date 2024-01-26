@@ -11,13 +11,15 @@ import Link from 'next/link'
 import {
   IconBRZ,
   IconDashboard,
+  IconImprint,
   IconMoon,
   IconPlus,
   IconSun,
   IconTrash
-} from './ui/icons'
+} from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { ImprintDialog } from './imprint-dialog'
 
 export function SidebarList() {
   const { getChats, clearChats } = useChats()
@@ -38,10 +40,23 @@ export function SidebarList() {
     <div className="flex flex-col flex-1 m-3 overflow-hidden">
       <div className="relative h-20">
         <div className="flex w-full h-full bg-background-secondary rounded-xl">
-          <IconBRZ className="w-12 h-12 p-1.5 m-auto ml-5 mr-3 border rounded-full border-primary border-opacity-80 bg-primary text-secondary" />
+          <a
+            href={'https://brz-chatbot.vercel.app/'}
+            className="w-12 h-12 m-auto ml-5 mr-3 border rounded-full border-primary border-opacity-80 bg-primary text-secondary"
+          >
+            <IconBRZ className="w-full h-full p-1.5" />
+          </a>
           <div className="flex flex-col justify-center flex-1">
             <div className="hidden text-lg leading-5 text-secondary-foreground 2xl:block">
-              Bundesrechenzentrum Chatbot
+              <Button
+                variant={'link'}
+                size={'sm'}
+                className="h-5 p-0 text-base font-normal text-secondary-foreground"
+              >
+                <Link href={'https://brz-chatbot.vercel.app/'}>
+                  Bundesrechenzentrum Chatbot
+                </Link>
+              </Button>
             </div>
             <div className="block text-lg leading-5 text-secondary-foreground 2xl:hidden">
               BRZ Chatbot
@@ -54,11 +69,7 @@ export function SidebarList() {
       </div>
 
       <div className="flex flex-col flex-1 py-2 mt-5 overflow-auto">
-        {chats?.length ? (
-          <ScrollArea>
-            <SidebarItems chats={chats} />
-          </ScrollArea>
-        ) : null}
+        {chats?.length ? <SidebarItems chats={chats} /> : null}
         <div>
           <Link
             href="/"
@@ -107,9 +118,7 @@ export function SidebarList() {
           Theme ändern
         </Button>
 
-        <Button
-          className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground"
-        >
+        <Button className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground">
           <Link
             href="/dashboard"
             className="flex flex-row items-center w-full h-full"
@@ -118,6 +127,12 @@ export function SidebarList() {
             Dashboard
           </Link>
         </Button>
+        <ImprintDialog>
+          <Button className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground">
+            <IconImprint className="mr-3" />
+            Impressum
+          </Button>
+        </ImprintDialog>
       </div>
     </div>
   )
