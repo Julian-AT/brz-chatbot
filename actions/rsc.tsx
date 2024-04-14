@@ -129,9 +129,14 @@ async function submitUserMessage(userInput: string): Promise<Message> {
             }
 
             const jobCount = json.jobs.length || 0
-            const jobInfo = json.jobs?.slice(0, 3)
-
-            console.log('jobinfo', jobInfo)
+            const jobInfo = json.jobs?.slice(0, 3) as {
+              timestamp: string
+              filters: {
+                textFilter: string
+                categoryFilter?: string[]
+              }
+              jobs: Job[]
+            }
 
             aiState.done([
               ...aiState.get(),
@@ -150,7 +155,7 @@ async function submitUserMessage(userInput: string): Promise<Message> {
                     <JobCard
                       date={job.date}
                       title={job.title}
-                      subtitle={job.description}
+                      subtitle={job.subtitle}
                       location={job.location}
                       image={job.image || null}
                       url={job.url}
