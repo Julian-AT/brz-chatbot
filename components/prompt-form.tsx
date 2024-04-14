@@ -13,8 +13,9 @@ import { useRouter } from 'next/navigation'
 import { SidebarMobile } from './sitebar-mobile'
 import { ChatHistory } from './chat-history'
 
-export interface PromptProps
-  extends Pick<UseChatHelpers, 'input' | 'setInput'> {
+export interface PromptProps {
+  input: string
+  setInput: (value: string) => void
   onSubmit: (value: string) => void
   isLoading: boolean
 }
@@ -27,7 +28,6 @@ export function PromptForm({
 }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const router = useRouter()
   React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()

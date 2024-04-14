@@ -77,6 +77,8 @@ export async function POST(req: Request) {
       )
     }
 
+    console.log('called job api with', textFilter, categoryFilter)
+
     const jobs = await getJobsWithFilters(textFilter, categoryFilter)
 
     return new Response(JSON.stringify({ timestamp: new Date(), ...jobs }), {

@@ -34,7 +34,7 @@
     "@tanstack/react-table": "^8.11.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/og": "^0.5.20",
-    "ai": "^2.2.31",
+    "ai": "^3.0.22",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.16",

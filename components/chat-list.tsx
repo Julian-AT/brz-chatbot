@@ -1,20 +1,15 @@
-import { type Message } from 'ai'
-
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
 import { useEffect, useRef } from 'react'
+import { Message } from '@/types'
+import JobCard from './jobs/job-card'
 
 export interface ChatList {
   messages: Message[]
-  initialMessageCount: number
   isLoading: boolean
 }
 
-export function ChatList({
-  messages,
-  initialMessageCount,
-  isLoading
-}: ChatList) {
+export function ChatList({ messages, isLoading }: ChatList) {
   const endOfMessagesRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,13 +30,12 @@ export function ChatList({
           )}
         </div>
       ))}
-      {isLoading && messages.length === initialMessageCount && (
+      {isLoading && (
         <div>
           <Separator className="my-8" />
           <ChatMessage
             message={{
-              content: '',
-              ui: (
+              display: (
                 <span className="flex-1 px-1 mt-1 ml-4 space-y-2 overflow-hidden cursor-default animate-pulse">
                   ⬤
                 </span>

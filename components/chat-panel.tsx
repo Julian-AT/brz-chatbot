@@ -3,41 +3,30 @@ import { type UseChatHelpers } from 'ai/react'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { useChats } from '@/lib/hooks/use-chats'
-import { Message } from 'ai'
 import { usePathname, useRouter } from 'next/navigation'
 import { nanoid } from 'nanoid'
 import { Button } from '@/components/ui/button'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { useSettings } from '@/lib/hooks/use-settings'
+import { Message } from '@/types'
 
-export interface ChatPanelProps
-  extends Pick<
-    UseChatHelpers,
-    | 'append'
-    | 'isLoading'
-    | 'reload'
-    | 'messages'
-    | 'stop'
-    | 'input'
-    | 'setInput'
-  > {
+export interface ChatPanelProps {
   id?: string
+  input: string
+  isLoading: boolean
+  messages: Message[]
+  setInput: (value: string) => void
+  onSubmit: (value: string) => void
 }
 
 export function ChatPanel({
   id,
   isLoading,
-  append,
-  reload,
   input,
+  messages,
   setInput,
-  messages
+  onSubmit
 }: ChatPanelProps) {
-  const { appendMessage, removeMessage, saveChat } = useChats()
-  const router = useRouter()
-  const path = usePathname()
-  const { settings } = useSettings()
-
   return (
     <div
       key={id}
@@ -60,19 +49,6 @@ export function ChatPanel({
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    if (!id) return console.log('no id')
-                    const message = messages[messages.length - 1]
-                    removeMessage(id, message.id)
-                    reload({
-                      options: {
-                        body: {
-                          id,
-                          settings
-                        }
-                      }
-                    })
-                  }}
                   className="bg-background border-border"
                 >
                   <IconRefresh className="mr-2" />
@@ -84,36 +60,7 @@ export function ChatPanel({
         </div>
         <div className="w-full pt-2 space-y-4 sm:px-4 sm:py-2 md:pb-4">
           <PromptForm
-            onSubmit={async value => {
-              if (!id) return console.log('no id')
-
-              const messageId = nanoid(21)
-
-              const message: Message = {
-                id: messageId,
-                createdAt: new Date(),
-                content: value,
-                role: 'user'
-              }
-
-              try {
-                appendMessage(id, message)
-                if (!path.includes('chat')) {
-                  router.push(`/chat/${id}`, { scroll: false })
-                  router.refresh()
-                }
-                await append(message, {
-                  options: {
-                    body: {
-                      id,
-                      settings
-                    }
-                  }
-                })
-              } catch (error) {
-                console.error('Fehler beim Senden der Nachricht:', error)
-              }
-            }}
+            onSubmit={onSubmit}
             input={input}
             setInput={setInput}
             isLoading={isLoading}

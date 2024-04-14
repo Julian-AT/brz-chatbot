@@ -53,9 +53,10 @@ export type DashboardConfig = {
 export type Job = {
   id: number
   title: string
-  description: string
+  subtitle: string
   location: string
   date: string
+  image: string | null
   url: string
 }
 
@@ -71,4 +72,11 @@ export type Stats = {
 export type JobData = {
   jobs: Job[]
   stats: Stats
+}
+
+export type Message = {
+  role: 'user' | 'assistant' | 'function'
+  id: string
+  display: any
+  createdAt?: Date
 }

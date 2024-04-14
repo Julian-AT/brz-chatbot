@@ -115,6 +115,8 @@ const fetchJobListDataWithFilters = async (
       () => document.getElementById('filter')?.getAttribute('value')
     )
 
+    console.log(text)
+
     await page.evaluate(() => {
       document.getElementById('submitFilter')?.click()
     })
@@ -132,9 +134,12 @@ const fetchJobListDataWithFilters = async (
 interface Job {
   Id: number
   Title: string
-  Location: string
   SubTitle: string
+  Location: string
   Date: string
+  SocialMedia?: {
+    Image: string
+  }
   UrlEncodedTitle: string
 }
 
@@ -142,9 +147,10 @@ const parseJobs = (jobs: Job[]) => {
   return jobs.map(job => ({
     id: job.Id,
     title: job.Title,
-    description: job.SubTitle,
+    subtitle: job.SubTitle,
     location: job.Location,
     date: job.Date,
+    image: job.SocialMedia?.Image,
     url: `https://www.brz-jobs.at/Job/${job.Id}/${job.UrlEncodedTitle}`
   }))
 }

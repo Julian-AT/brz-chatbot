@@ -78,7 +78,7 @@ const jobTool = new DynamicStructuredTool({
           body: JSON.stringify({ textFilter, categoryFilter })
         })
         const json = await res.json()
-        return JSON.stringify(json.jobs?.slice(0, 10))
+        return JSON.stringify(json.jobs?.slice(0, 4))
       } catch (error) {
         console.log('Ein Fehler ist aufgetreten: ', error)
         throw new Error('Fehler bei der Abfrage der API')
@@ -166,7 +166,7 @@ export async function POST(req: Request) {
       new OpenAIEmbeddings(),
       {
         url: process.env.QDRANT_URL,
-        collectionName: process.env.QDRANT_COLLECTION_NAME
+        collectionName: 'brz_sitemap'
       }
     )
 
