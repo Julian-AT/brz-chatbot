@@ -151,7 +151,7 @@ async function submitUserMessage(userInput: string): Promise<Message> {
               <div className="flex flex-col gap-6">
                 <InfoMessage jobCount={jobCount} />
                 <div>
-                  {jobInfo.map((job, index) => (
+                  {jobInfo.jobs.map((job, index) => (
                     <JobCard
                       date={job.date}
                       title={job.title}
