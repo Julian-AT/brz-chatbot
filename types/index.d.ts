@@ -76,6 +76,7 @@ export type JobData = {
 
 export type Message = {
   role: 'user' | 'assistant' | 'function'
+  content?: string
   id: string
   display: any
   createdAt?: Date

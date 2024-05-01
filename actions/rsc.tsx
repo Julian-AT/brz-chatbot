@@ -1,10 +1,16 @@
 import { OpenAI } from 'openai'
 import { createAI, getMutableAIState, render } from 'ai/rsc'
 import { z } from 'zod'
-import { IconSpinner } from '@/components/ui/icons'
 import JobCard from '@/components/jobs/job-card'
 import { Job, Message } from '@/types'
 import { nanoid } from 'nanoid'
+import ChatCircularProgress from '@/components/chat-circular-progress'
+import ChatErrorMessage from '@/components/chat-error-message'
+import { Button } from '@/components/ui/button'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import { CodeBlock } from '@/components/ui/codeblock'
+import { MemoizedReactMarkdown } from '@/components/markdown'
 
 const jobProfiles = [
   'BI/AI/Big Data/Data Science',
@@ -32,10 +38,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
 
-function Spinner() {
-  return <IconSpinner className="animate-spin" />
-}
-
 function InfoMessage({ jobCount }: { jobCount: number }) {
   return (
     <div>
@@ -59,11 +61,23 @@ async function submitUserMessage(userInput: string): Promise<Message> {
     }
   ])
 
+  let progress: number = 0
+
   const ui = render({
     model: 'gpt-4-0125-preview',
     provider: openai,
     messages: [
-      { role: 'system', content: 'You are a flight assistant' },
+      {
+        role: 'system',
+        content: `Du bist ein hilfreicher Chatbot der Fragen über das Bundesrechenzentrum (BRZ) beantwortet.
+
+      Du hast zusätzlich Zugriff auf einige Tools, die dir helfen an relevante Informationen zu kommen.
+      
+      Befolge beim Beantworten der Fragen folgende Regeln:
+      - Benutzte die Tools, die dir zur Verfügung gestellt werden
+      - Verwende die Sprache des Users
+      - Formatiere Antworten in Markdown`
+      },
       ...aiState.get()
     ],
     text: ({ content, done }: { content: any; done: any }) => {
@@ -77,7 +91,49 @@ async function submitUserMessage(userInput: string): Promise<Message> {
         ])
       }
 
-      return <p>{content}</p>
+      return (
+        <MemoizedReactMarkdown
+          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+          remarkPlugins={[remarkGfm, remarkMath]}
+          components={{
+            p({ children }) {
+              return <div className="w-full mb-2 last:mb-0">{children}</div>
+            },
+            code({ node, inline, className, children, ...props }) {
+              if (children.length) {
+                if (children[0] == '⬤') {
+                  return (
+                    <span className="mt-1 cursor-default animate-pulse">⬤</span>
+                  )
+                }
+
+                children[0] = (children[0] as string).replace(`'\`⬤\`'`, '⬤')
+              }
+
+              const match = /language-(\w+)/.exec(className || '')
+
+              if (inline) {
+                return (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                )
+              }
+
+              return (
+                <CodeBlock
+                  key={Math.random()}
+                  language={(match && match[1]) || ''}
+                  value={String(children).replace(/\n$/, '')}
+                  {...props}
+                />
+              )
+            }
+          }}
+        >
+          {content}
+        </MemoizedReactMarkdown>
+      )
     },
     tools: {
       get_job_info: {
@@ -103,9 +159,20 @@ async function submitUserMessage(userInput: string): Promise<Message> {
           textFilter: string
           categoryFilter?: (typeof jobProfiles)[number]
         }) {
-          yield <Spinner />
+          if (progress < 75) {
+            progress += 15
+          }
 
-          try {
+          yield (
+            // <ChatCircularProgress
+            //   text="BRZ Jobs"
+            //   description="Suche nach passenden Jobs..."
+            //   progress={progress}
+            // />
+            <div>Grrrr</div>
+          )
+
+          async function fetchJobs() {
             const res = await fetch(
               'https://brz-chatbot.vercel.app/api/jobs/brz',
               {
@@ -118,24 +185,53 @@ async function submitUserMessage(userInput: string): Promise<Message> {
               }
             )
             const json = await res.json()
-            console.log(json)
-
-            if (!json || !json.jobs || json.jobs.length === 0) {
+            if (!json || !json.jobs || json instanceof Error) {
               return (
-                <p>
-                  Es wurden keine passenden Jobs für deine Anfrage gefunden.
-                </p>
+                <ChatErrorMessage text="Ein Fehler bei der Suche nach passenden Jobs ist aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie uns bitte." />
               )
             }
 
             const jobCount = json.jobs.length || 0
-            const jobInfo = json.jobs?.slice(0, 3) as {
+            const jobInfo = json as {
               timestamp: string
               filters: {
                 textFilter: string
                 categoryFilter?: string[]
               }
               jobs: Job[]
+            }
+
+            console.log(jobInfo)
+
+            const jobs = jobInfo.jobs.slice(0, 3)
+
+            if (jobCount === 0) {
+              return (
+                <div>
+                  Ich habe leider keine passenden Jobs für deine Anfrage
+                  gefunden. Bitte versuche es mit anderen Suchbegriffen oder
+                  Kategorien erneut.
+                  <div>
+                    <Button
+                      onClick={() => {
+                        aiState.done([
+                          ...aiState.get(),
+                          {
+                            role: 'function',
+                            name: 'get_job_info',
+                            content: JSON.stringify({
+                              textFilter: '.',
+                              categoryFilter: undefined
+                            })
+                          }
+                        ])
+                      }}
+                    >
+                      Zufällige Jobs anzeigen
+                    </Button>
+                  </div>
+                </div>
+              )
             }
 
             aiState.done([
@@ -151,7 +247,7 @@ async function submitUserMessage(userInput: string): Promise<Message> {
               <div className="flex flex-col gap-6">
                 <InfoMessage jobCount={jobCount} />
                 <div>
-                  {jobInfo.jobs.map((job, index) => (
+                  {jobs.map((job, index) => (
                     <JobCard
                       date={job.date}
                       title={job.title}
@@ -165,13 +261,23 @@ async function submitUserMessage(userInput: string): Promise<Message> {
                 </div>
               </div>
             )
+          }
+
+          try {
+            return await fetchJobs()
           } catch (error) {
-            console.log('Error:', error)
-            return (
-              <p>
-                Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.
-              </p>
+            console.log(
+              'An error occured trying to fetch jobs. this is probably due to a cold start of the server. trying again.',
+              error
             )
+            try {
+              return await fetchJobs()
+            } catch (error) {
+              console.log(error)
+              return (
+                <ChatErrorMessage text="Ein Fehler ist aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie uns bitte." />
+              )
+            }
           }
         }
       }

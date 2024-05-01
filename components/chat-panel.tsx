@@ -1,13 +1,7 @@
-import { type UseChatHelpers } from 'ai/react'
-
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { useChats } from '@/lib/hooks/use-chats'
-import { usePathname, useRouter } from 'next/navigation'
-import { nanoid } from 'nanoid'
 import { Button } from '@/components/ui/button'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
-import { useSettings } from '@/lib/hooks/use-settings'
 import { Message } from '@/types'
 
 export interface ChatPanelProps {
@@ -17,6 +11,8 @@ export interface ChatPanelProps {
   messages: Message[]
   setInput: (value: string) => void
   onSubmit: (value: string) => void
+  cancelMessage: () => void
+  regenerateMessage: () => void
 }
 
 export function ChatPanel({
@@ -25,7 +21,9 @@ export function ChatPanel({
   input,
   messages,
   setInput,
-  onSubmit
+  onSubmit,
+  cancelMessage,
+  regenerateMessage
 }: ChatPanelProps) {
   return (
     <div
@@ -38,7 +36,7 @@ export function ChatPanel({
           {isLoading ? (
             <Button
               variant="outline"
-              onClick={() => stop()}
+              onClick={cancelMessage}
               className="bg-background border-border"
             >
               <IconStop className="mr-2" />
@@ -49,7 +47,8 @@ export function ChatPanel({
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  className="bg-background border-border"
+                  className="bg-background/75 border-border"
+                  onClick={regenerateMessage}
                 >
                   <IconRefresh className="mr-2" />
                   Antwort regenerieren

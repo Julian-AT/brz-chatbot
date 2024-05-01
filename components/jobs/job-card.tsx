@@ -1,9 +1,13 @@
 import React from 'react'
 import { Card } from '@/components/ui/card'
-import { IconBRZ } from '../ui/icons'
-import TestImage from '@/public/test_image.jpg'
+import { IconBRZ } from '@/components/ui/icons'
 import AlternativeImageBrz from '@/public/brz_alt.jpg'
 import Image from 'next/image'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface JobCardProps {
   title: string
@@ -26,18 +30,36 @@ const JobCard = ({
     <Card className="my-5 bg-background">
       <div className="px-4 py-5 duration-150">
         <a href={url} className="space-y-3">
-          <Image
-            src={image || AlternativeImageBrz}
-            alt="Test Image"
-            className="object-cover rounded-md h-[275px]"
-          />
+          <div className="relative h-72">
+            <Image
+              src={image || AlternativeImageBrz}
+              alt="BRZ Image"
+              objectFit="cover"
+              fill
+              className="w-full h-full rounded-md"
+            />
+          </div>
           <div className="flex flex-row items-center w-full gap-x-3">
             <div className="flex items-center justify-center w-12 h-12 border rounded-full border-primary border-opacity-80 bg-primary text-secondary">
               <IconBRZ className="w-12 h-12 p-1.5" />
             </div>
             <div className="w-full mr-3 truncate">
-              <span className="w-12 h-6 text-base font-normal ">{title}</span>
-              <h3 className="text-base text-muted-foreground">{subtitle}</h3>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="w-12 h-6 text-base font-normal truncate">
+                    {title}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{title}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3 className="text-base truncate text-muted-foreground">
+                    {subtitle}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent>{subtitle}</TooltipContent>
+              </Tooltip>
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-600">
               <span className="flex items-center gap-2 text-muted-foreground">

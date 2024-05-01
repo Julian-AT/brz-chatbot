@@ -19,7 +19,7 @@ export function ChatMessageActions({
 
   const onCopy = () => {
     if (isCopied) return
-    copyToClipboard(message.display)
+    copyToClipboard(message.content as string)
   }
 
   return (

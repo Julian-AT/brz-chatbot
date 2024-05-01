@@ -10,7 +10,9 @@ import moment from 'moment'
 import { siteConfig } from '@/config/config'
 import { AI } from '@/actions/rsc'
 
+
 moment.locale('de')
+
 
 export const metadata: Metadata = {
   title: {

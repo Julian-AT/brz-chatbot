@@ -8,15 +8,25 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { SidebarProvider } from '@/lib/hooks/use-sidebar'
 import { ChatProvider } from '@/lib/hooks/use-chats'
 import { SettingsProvider } from '@/lib/hooks/use-settings'
+import { NextUIProvider } from '@nextui-org/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export function Providers({ children, ...props }: ThemeProviderProps) {
   return (
     <SettingsProvider>
       <ChatProvider>
         <NextThemesProvider {...props}>
-          <SidebarProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-          </SidebarProvider>
+          <NextUIProvider>
+            <SidebarProvider>
+              <TooltipProvider>
+                <QueryClientProvider client={queryClient}>
+                  {children}
+                </QueryClientProvider>
+              </TooltipProvider>
+            </SidebarProvider>
+          </NextUIProvider>
         </NextThemesProvider>
       </ChatProvider>
     </SettingsProvider>

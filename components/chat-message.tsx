@@ -1,9 +1,4 @@
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
-
 import { cn } from '@/lib/utils'
-import { CodeBlock } from '@/components/ui/codeblock'
-import { MemoizedReactMarkdown } from '@/components/markdown'
 import { IconBRZ, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/chat-message-actions'
 import moment from 'moment'
@@ -79,7 +74,9 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         </div>
         <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
           {message.display}
-          <ChatMessageActions message={message} className="hidden md:block" />
+          {message.content && (
+            <ChatMessageActions message={message} className="hidden md:block" />
+          )}
         </div>
       </div>
     </div>
