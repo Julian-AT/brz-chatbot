@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { CircularProgress } from '@nextui-org/react'
 
@@ -11,8 +13,18 @@ export interface ChatCircularProgressProps extends React.ComponentProps<'div'> {
 const ChatCircularProgress = ({
   text,
   description,
-  progress
+  progress: initialProgress = 0
 }: ChatCircularProgressProps) => {
+  const [progress, setProgress] = useState(initialProgress)
+
+  useEffect(() => {
+    if (progress < 90) {
+      setTimeout(() => {
+        setProgress(progress + 7.5)
+      }, 1000)
+    }
+  }, [progress])
+
   return (
     <Card className="flex items-center gap-3 px-6 py-3 rounded-sm w-max bg-secondary">
       <CircularProgress

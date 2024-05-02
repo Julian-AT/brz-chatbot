@@ -46,7 +46,7 @@ export function PromptForm({
       }}
       ref={formRef}
     >
-      <div className="relative flex items-center w-full h-24 overflow-hidden border-t sm:h-full max-h-60 bg-background/75 sm:rounded-md sm:border border-border">
+      <div className="relative flex items-center w-full h-24 overflow-hidden border-t sm:h-full max-h-60 bg-background sm:rounded-md sm:border border-border">
         {/* Sidebar Button */}
         <div className="flex items-center justify-center w-16 h-16 p-2 md:hidden">
           <SidebarMobile>

@@ -36,9 +36,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
     if (lastMessage.role === 'assistant') {
       messages.pop()
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
   const regenerateMessage = async () => {
@@ -55,13 +54,10 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     console.log('message', message)
     if (!message || !message.content) return console.error('no user message')
 
-    console.log(message.content)
-
     onSubmit(message.content)
   }
 
   const onSubmit = async (value: string) => {
-    setIsLoading(true)
     if (!id) return console.log('no id')
 
     const messageId = nanoid(21)
@@ -82,28 +78,17 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       setMessages((currentMessages: any) => [...currentMessages, message])
       const responseMessage = await submitUserMessage(value)
-      setMessages(currentMessages => [...currentMessages, responseMessage])
+      console.log(responseMessage)
 
-      await new Promise(resolve => {
-        const waitForCompletion = async () => {
-          const status = responseMessage.display.props.children._payload.status
-          console.log(status)
-
-          if (status === 'fulfilled' || status === 'resolved_model') {
-            resolve(setIsLoading(false))
-          } else {
-            setTimeout(waitForCompletion, 250)
-          }
-        }
-        waitForCompletion()
-      })
+      setMessages((currentMessages: Message[]) => [
+        ...currentMessages,
+        responseMessage
+      ])
 
       setInputValue('')
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error)
       return <ChatErrorMessage text="Fehler beim Senden der Nachricht" />
-    } finally {
-      setIsLoading(false)
     }
   }
 

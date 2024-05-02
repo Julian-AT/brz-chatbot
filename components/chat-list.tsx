@@ -30,22 +30,6 @@ export function ChatList({ messages, isLoading }: ChatList) {
           )}
         </div>
       ))}
-      {isLoading && (
-        <div>
-          <Separator className="my-8" />
-          <ChatMessage
-            message={{
-              display: (
-                <span className="flex-1 px-1 mt-1 ml-4 space-y-2 overflow-hidden cursor-default animate-pulse">
-                  ⬤
-                </span>
-              ),
-              role: 'assistant',
-              id: 'loading'
-            }}
-          />
-        </div>
-      )}
       <div ref={endOfMessagesRef} />
     </div>
   )

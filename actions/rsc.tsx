@@ -43,7 +43,8 @@ function InfoMessage({ jobCount }: { jobCount: number }) {
     <div>
       Ich habe {jobCount} {jobCount > 1 ? 'passende Jobs' : 'passenden Job'} für
       deine Anfrage gefunden.
-      {jobCount > 3 && 'Hier sind die Drei aktuellsten Jobs für deine Anfrage.'}
+      {jobCount > 3 &&
+        ' Hier sind die Drei aktuellsten Jobs für deine Anfrage.'}
     </div>
   )
 }
@@ -60,8 +61,6 @@ async function submitUserMessage(userInput: string): Promise<Message> {
       content: userInput
     }
   ])
-
-  let progress: number = 0
 
   const ui = render({
     model: 'gpt-4-0125-preview',
@@ -82,6 +81,8 @@ async function submitUserMessage(userInput: string): Promise<Message> {
     ],
     text: ({ content, done }: { content: any; done: any }) => {
       if (done) {
+        console.log('done', content)
+
         aiState.done([
           ...aiState.get(),
           {
@@ -97,7 +98,17 @@ async function submitUserMessage(userInput: string): Promise<Message> {
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
             p({ children }) {
-              return <div className="w-full mb-2 last:mb-0">{children}</div>
+              return (
+                <div className="w-full mb-2 last:mb-0">
+                  {children}
+                  {!done && (
+                    <span className="mt-1 cursor-default animate-pulse">
+                      {' '}
+                      ⬤
+                    </span>
+                  )}
+                </div>
+              )
             },
             code({ node, inline, className, children, ...props }) {
               if (children.length) {
@@ -159,17 +170,11 @@ async function submitUserMessage(userInput: string): Promise<Message> {
           textFilter: string
           categoryFilter?: (typeof jobProfiles)[number]
         }) {
-          if (progress < 75) {
-            progress += 15
-          }
-
           yield (
-            // <ChatCircularProgress
-            //   text="BRZ Jobs"
-            //   description="Suche nach passenden Jobs..."
-            //   progress={progress}
-            // />
-            <div>Grrrr</div>
+            <ChatCircularProgress
+              text="BRZ Jobs"
+              description="Suche nach passenden Jobs..."
+            />
           )
 
           async function fetchJobs() {
@@ -264,7 +269,18 @@ async function submitUserMessage(userInput: string): Promise<Message> {
           }
 
           try {
-            return await fetchJobs()
+            const returnValue = await fetchJobs()
+            yield (
+              <ChatCircularProgress
+                text="BRZ Jobs"
+                description="Suche nach passenden Jobs..."
+                progress={100}
+              />
+            )
+
+            return await new Promise(resolve =>
+              setTimeout(() => resolve(returnValue), 1000)
+            )
           } catch (error) {
             console.log(
               'An error occured trying to fetch jobs. this is probably due to a cold start of the server. trying again.',

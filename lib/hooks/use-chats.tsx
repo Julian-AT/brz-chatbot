@@ -20,6 +20,8 @@ interface ChatContextType {
   clearChats: () => void
   appendMessage: (chatId: string, message: Message) => void
   removeMessage: (chatId: string, messageId: string) => void
+  isLoading: boolean
+  setIsLoading: (value: boolean) => void
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -31,13 +33,16 @@ const ChatContext = createContext<ChatContextType>({
   removeChat: () => {},
   clearChats: () => {},
   appendMessage: () => {},
-  removeMessage: () => {}
+  removeMessage: () => {},
+  isLoading: false,
+  setIsLoading: () => {}
 })
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   children
 }) => {
   const [chats, setChats] = useLocalStorage<Chat[]>('chats', [])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const getChats = useCallback(() => chats, [chats])
 
@@ -138,7 +143,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         removeChat,
         clearChats,
         appendMessage,
-        removeMessage
+        removeMessage,
+        isLoading,
+        setIsLoading
       }}
     >
       {children}

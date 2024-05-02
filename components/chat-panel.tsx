@@ -47,7 +47,7 @@ export function ChatPanel({
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  className="bg-background/75 border-border"
+                  className="bg-background border-border"
                   onClick={regenerateMessage}
                 >
                   <IconRefresh className="mr-2" />
