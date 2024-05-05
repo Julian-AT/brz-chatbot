@@ -4,13 +4,13 @@ import * as React from 'react'
 
 const LOCAL_STORAGE_KEY = 'sidebar'
 
-interface SidebarContextType {
+interface SidebarContext {
   isSidebarOpen: boolean
   toggleSidebar: () => void
   isLoading: boolean
 }
 
-const SidebarContext = React.createContext<SidebarContextType | undefined>(
+const SidebarContext = React.createContext<SidebarContext | undefined>(
   undefined
 )
 

@@ -50,34 +50,68 @@ export type DashboardConfig = {
   sidebarNav: SidebarNavItem[]
 }
 
-export type Job = {
-  id: number
+export interface Chat extends Record<string, any> {
+  id: string
   title: string
-  subtitle: string
-  location: string
-  date: string
-  image: string | null
-  url: string
+  createdAt: Date
+  userId: string
+  path: string
+  messages: Message[]
+  sharePath?: string
 }
 
-export type Stats = {
-  regions: {
-    text: string
-    subregions: string[]
-  }[]
-  jobProfiles: string[]
-  totalJobsCount: number
-}
-
-export type JobData = {
-  jobs: Job[]
-  stats: Stats
-}
+export type ServerActionResult<Result> = Promise<
+  | Result
+  | {
+      error: string
+    }
+>
 
 export type Message = {
-  role: 'user' | 'assistant' | 'function'
-  content?: string
+  role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
+  content: string
+  id?: string
+  name?: string
+  display?: {
+    name: string
+    props: Record<string, any>
+  }
+}
+
+export type AIState = {
+  chatId: string
+  interactions?: string[]
+  messages: Message[]
+}
+
+export type UIState = {
   id: string
-  display: any
-  createdAt?: Date
+  display: React.ReactNode
+  spinner?: React.ReactNode
+  attachments?: React.ReactNode
+}[]
+
+export type SitemapJob = {
+  loc: string
+  lastmod: string
+  title: string
+}
+
+export interface Session {
+  user: {
+    id: string
+    email: string
+  }
+}
+
+export interface AuthResult {
+  type: string
+  message: string
+}
+
+export interface User extends Record<string, any> {
+  id: string
+  email: string
+  password: string
+  salt: string
 }

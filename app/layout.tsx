@@ -1,18 +1,17 @@
 import { Metadata } from 'next'
-
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import '@/app/globals.css'
-import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
-import { Toaster } from '@/components/ui/toaster'
 import moment from 'moment'
+import { Toaster } from '@/components/ui/sonner'
+import { Analytics } from '@vercel/analytics/react'
 import { siteConfig } from '@/config/config'
-import { AI } from '@/actions/rsc'
-
+import { Header } from '@/components/header'
 
 moment.locale('de')
-
 
 export const metadata: Metadata = {
   title: {
@@ -59,29 +58,26 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
       <body
         className={cn(
           'font-sans antialiased',
-          fontSans.variable,
-          fontMono.variable
+          GeistSans.variable,
+          GeistMono.variable
         )}
       >
+        <Toaster position="top-center" />
         <Providers
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
           <div className="flex flex-col min-h-screen">
-            {/* @ts-ignore */}
-            <main className="flex flex-col flex-1 bg-muted/50">
-              <AI>{children}</AI>
-              <Toaster />
-            </main>
+            <main className="flex flex-col flex-1">{children}</main>
           </div>
           <TailwindIndicator />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )

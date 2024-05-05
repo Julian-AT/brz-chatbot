@@ -5,7 +5,9 @@ import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { IconMoon, IconSun } from '@/components/ui/icons'
 
-export function ThemeToggle() {
+interface ThemeToggleProps extends React.ComponentPropsWithoutRef<'button'> {}
+
+export function ThemeToggle({ className, ...props }: ThemeToggleProps) {
   const { setTheme, theme } = useTheme()
   const [_, startTransition] = React.useTransition()
 
@@ -18,6 +20,7 @@ export function ThemeToggle() {
           setTheme(theme === 'light' ? 'dark' : 'light')
         })
       }}
+      className={className}
     >
       {!theme ? null : theme === 'dark' ? (
         <IconMoon className="transition-all" />
