@@ -95,15 +95,6 @@ export async function SidebarList({ userId }: SidebarListProps) {
           className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground"
         />
         <ThemeToggle className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground" />
-        <Button className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground">
-          <Link
-            href="/dashboard"
-            className="flex flex-row items-center w-full h-full"
-          >
-            <IconDashboard className="mr-3" />
-            Dashboard
-          </Link>
-        </Button>
         <ImprintDialog>
           <Button className="h-12 w-full justify-start px-4 bg-background shadow-none hover:bg-background-secondary rounded-[10px] text-secondary-foreground">
             <IconImprint className="mr-3" />
