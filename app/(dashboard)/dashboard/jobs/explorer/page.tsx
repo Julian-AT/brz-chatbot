@@ -3,7 +3,6 @@ import { JobsTable } from '@/components/dashboard/jobs/jobs-table'
 import { JobsStats } from '@/components/dashboard/jobs/stats'
 import { DashboardShell } from '@/components/dashboard/shell'
 import { getJobsAndStats } from '@/lib/job-api'
-import { JobData } from '@/types'
 
 export default async function JobAPIPlaygroundPage() {
   const jobData = await getJobsAndStats()
