@@ -19,15 +19,15 @@ export function ChatList({ messages, session, isShared }: ChatList) {
             </div>
             <div className="flex-1 px-1 ml-5 space-y-2 overflow-auto">
               <p className="leading-normal text-muted-foreground">
-                Please{' '}
+                Bitte{' '}
                 <Link href="/login" className="underline underline-offset-4">
-                  log in
+                  melde dich an
                 </Link>{' '}
                 or{' '}
                 <Link href="/signup" className="underline underline-offset-4">
-                  sign up
+                  registriere dich
                 </Link>{' '}
-                to save and revisit your chat history!
+                um deinen Chatverlauf zu speichern und wiederzufinden!
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ export function EmptyScreen({ children, className }: EmptyScreenProps) {
   return (
     <div
       className={cn(
-        'w-full min-h-full overflow-auto md:overflow-hidden',
+        'w-full min-h-full overflow-auto md:overflow-hidden select-none container',
         className
       )}
     >

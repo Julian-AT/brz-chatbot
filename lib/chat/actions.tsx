@@ -17,23 +17,18 @@ import {
 
 import { nanoid, sleep } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { AIState, Chat, SitemapJob, UIState } from '@/types'
+import { AIState, Chat, UIState } from '@/types'
 import { auth } from '@/auth'
 import { IconCheck, IconSpinner } from '@/components/ui/icons'
 import { format } from 'date-fns'
 import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { z } from 'zod'
 import { rateLimit } from '@/lib/chat/ratelimit'
 import { fetchSitemap } from '@/lib/jobs/sitemap'
 import JobList from '@/components/jobs/job-list'
 import { extractJobInfoFromUrl } from '../jobs/job-info'
 import JobCard from '@/components/jobs/job-card'
-
-const genAI = new GoogleGenerativeAI(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY || ''
-)
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -68,7 +63,7 @@ async function submitUserMessage(content: string) {
   ;(async () => {
     try {
       const result = await streamText({
-        model: google('models/gemini-1.0-pro-001'),
+        model: google('models/gemini-1.0-pro-002'),
         temperature: 0,
         tools: {
           listPositions: {

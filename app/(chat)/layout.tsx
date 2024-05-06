@@ -25,7 +25,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
     >
       <SidebarDesktop />
 
-      <div className="relative w-full min-h-full pb-5 duration-300 ease-in-out border lg:border animate-in bg-background lg:rounded-xl lg:border-border lg:m-3">
+      <div className="relative w-full pb-5 duration-300 ease-in-out border lg:border animate-in bg-background lg:rounded-xl lg:border-border lg:m-3">
         <div className="absolute top-0 left-0 hidden m-3 mr-0 md:flex lg:hidden">
           <SidebarMobile>
             <ChatHistory />

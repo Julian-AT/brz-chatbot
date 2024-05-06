@@ -5,14 +5,15 @@ import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/chat/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconShare, SparklesIcon } from '@/components/ui/icons'
-import { FooterText } from '@/components/footer'
 import { ChatShareDialog } from '@/components/sidebar/chat-share-dialog'
+// @ts-ignore
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { UserMessage } from '@/components/chat/message'
+import { Message } from '@/types'
 
 export interface ChatPanelProps {
   id?: string
@@ -97,7 +98,7 @@ export function ChatPanel({
                     index > 1 && 'hidden md:block'
                   )}
                   onClick={async () => {
-                    setMessages(currentMessages => [
+                    setMessages((currentMessages: Message[]) => [
                       ...currentMessages,
                       {
                         id: nanoid(),
@@ -110,15 +111,15 @@ export function ChatPanel({
                         example.message
                       )
 
-                      setMessages(currentMessages => [
+                      setMessages((currentMessages: Message[]) => [
                         ...currentMessages,
                         responseMessage
                       ])
                     } catch {
                       toast(
-                        <div className="text-red-600">
-                          You have reached your message limit! Please try again
-                          later, or .
+                        <div className="text-red-500">
+                          Senden der Nachricht fehlgeschlagen. Bitte versuche es
+                          später erneut.
                         </div>
                       )
                     }

@@ -3,11 +3,12 @@
 import * as React from 'react'
 import Textarea from 'react-textarea-autosize'
 
+// @ts-ignore
 import { useActions, useUIState } from 'ai/rsc'
 
 import { type AI } from '@/lib/chat/actions'
 import { Button } from '@/components/ui/button'
-import { IconArrowElbow, IconPlus, IconSubmit } from '@/components/ui/icons'
+import { IconSubmit } from '@/components/ui/icons'
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +18,7 @@ import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 import { UserMessage } from './message'
+import { Message } from '@/types'
 
 export function PromptForm({
   input,
@@ -54,7 +56,7 @@ export function PromptForm({
         if (!value) return
 
         // Optimistically add user message UI
-        setMessages(currentMessages => [
+        setMessages((currentMessages: Message[]) => [
           ...currentMessages,
           {
             id: nanoid(),
@@ -65,11 +67,15 @@ export function PromptForm({
         try {
           // Submit and get response message
           const responseMessage = await submitUserMessage(value)
-          setMessages(currentMessages => [...currentMessages, responseMessage])
+          setMessages((currentMessages: Message[]) => [
+            ...currentMessages,
+            responseMessage
+          ])
         } catch {
           toast(
-            <div className="text-red-600">
-              You have reached your message limit! Please try again later, or{' '}
+            <div className="text-red-500">
+              Senden der Nachricht fehlgeschlagen. Bitte versuche es später
+              erneut.
             </div>
           )
         }
@@ -90,7 +96,7 @@ export function PromptForm({
 
           if (file.type.startsWith('video/')) {
             const responseMessage = await describeImage('')
-            setMessages(currentMessages => [
+            setMessages((currentMessages: Message[]) => [
               ...currentMessages,
               responseMessage
             ])
@@ -101,7 +107,7 @@ export function PromptForm({
             reader.onloadend = async () => {
               const base64String = reader.result
               const responseMessage = await describeImage(base64String)
-              setMessages(currentMessages => [
+              setMessages((currentMessages: Message[]) => [
                 ...currentMessages,
                 responseMessage
               ])

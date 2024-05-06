@@ -38,7 +38,7 @@ export default async function SharePage({ params }: SharePageProps) {
 
   return (
     <>
-      <div className="flex-1 space-y-6">
+      <div className="flex flex-col flex-1 min-h-screen space-y-6 overflow-hidden">
         <div className="px-4 py-6 border-b bg-background md:px-6 md:py-8">
           <div className="max-w-2xl mx-auto">
             <div className="space-y-1 md:-mx-8">
@@ -50,11 +50,13 @@ export default async function SharePage({ params }: SharePageProps) {
             </div>
           </div>
         </div>
-        <AI>
-          <ChatList messages={uiState} isShared={true} />
-        </AI>
+        <div className="flex-1 max-h-full">
+          <AI>
+            <ChatList messages={uiState} isShared={true} />
+          </AI>
+        </div>
+        <FooterText className="pt-4 pb-8 border-t " />
       </div>
-      <FooterText className="py-8" />
     </>
   )
 }
