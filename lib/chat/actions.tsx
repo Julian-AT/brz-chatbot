@@ -15,11 +15,10 @@ import {
   UserMessage
 } from '@/components/chat/message'
 
-import { nanoid, sleep } from '@/lib/utils'
+import { nanoid } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
 import { AIState, Chat, UIState } from '@/types'
 import { auth } from '@/auth'
-import { IconCheck, IconSpinner } from '@/components/ui/icons'
 import { format } from 'date-fns'
 import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
@@ -29,6 +28,7 @@ import { fetchSitemap } from '@/lib/jobs/sitemap'
 import JobList from '@/components/jobs/job-list'
 import { extractJobInfoFromUrl } from '../jobs/job-info'
 import JobCard from '@/components/jobs/job-card'
+import ChatErrorMessage from '@/components/chat/chat-error-message'
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -53,7 +53,8 @@ async function submitUserMessage(content: string) {
     role: message.role,
     content: message.content
   }))
-  // console.log(history)
+
+  console.log(history)
 
   const textStream = createStreamableValue('')
   const spinnerStream = createStreamableUI(<SpinnerMessage />)
@@ -63,7 +64,7 @@ async function submitUserMessage(content: string) {
   ;(async () => {
     try {
       const result = await streamText({
-        model: google('models/gemini-1.0-pro-002'),
+        model: google('models/gemini-1.0-pro-001'),
         temperature: 0,
         tools: {
           listPositions: {
@@ -118,6 +119,8 @@ async function submitUserMessage(content: string) {
           const { textDelta } = delta
 
           textContent += textDelta
+          console.log(textContent)
+
           messageStream.update(<BotMessage content={textContent} />)
 
           aiState.update({
@@ -132,6 +135,8 @@ async function submitUserMessage(content: string) {
             ]
           })
         } else if (type === 'tool-call') {
+          console.log('tool-call')
+
           const { toolName, args } = delta
 
           if (toolName === 'listPositions') {
@@ -194,6 +199,11 @@ async function submitUserMessage(content: string) {
           } else if (toolName === 'applyOnline') {
             const { position, department, location, applicationLink } = args
 
+            aiState.update({
+              ...aiState.get(),
+              interactions: []
+            })
+
             uiStream.update(
               <BotCard>
                 {/* <ApplyOnline
@@ -205,11 +215,6 @@ async function submitUserMessage(content: string) {
                 Test card
               </BotCard>
             )
-
-            aiState.done({
-              ...aiState.get(),
-              interactions: []
-            })
           }
         }
       }
@@ -221,8 +226,9 @@ async function submitUserMessage(content: string) {
       console.error(e)
 
       const error = new Error(
-        'The AI got rate limited, please try again later.'
+        'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.'
       )
+
       uiStream.error(error)
       textStream.error(error)
       messageStream.error(error)
@@ -238,96 +244,9 @@ async function submitUserMessage(content: string) {
   }
 }
 
-export async function requestCode() {
-  'use server'
-
-  const aiState = getMutableAIState()
-
-  aiState.done({
-    ...aiState.get(),
-    messages: [
-      ...aiState.get().messages,
-      {
-        role: 'assistant',
-        content:
-          "A code has been sent to user's phone. They should enter it in the user interface to continue."
-      }
-    ]
-  })
-
-  const ui = createStreamableUI(
-    <div className="animate-spin">
-      <IconSpinner />
-    </div>
-  )
-
-  ;(async () => {
-    await sleep(2000)
-    ui.done()
-  })()
-
-  return {
-    status: 'requires_code',
-    display: ui.value
-  }
-}
-
-export async function validateCode() {
-  'use server'
-
-  const aiState = getMutableAIState()
-
-  const status = createStreamableValue('in_progress')
-  const ui = createStreamableUI(
-    <div className="flex flex-col items-center justify-center gap-3 p-6 text-zinc-500">
-      <div className="animate-spin">
-        <IconSpinner />
-      </div>
-      <div className="text-sm text-zinc-500">
-        Please wait while we fulfill your order.
-      </div>
-    </div>
-  )
-
-  ;(async () => {
-    await sleep(2000)
-
-    ui.done(
-      <div className="flex flex-col items-center justify-center gap-3 p-4 text-center text-emerald-700">
-        <IconCheck />
-        <div>Payment Succeeded</div>
-        <div className="text-sm text-zinc-600">
-          Thanks for your purchase! You will receive an email confirmation
-          shortly.
-        </div>
-      </div>
-    )
-
-    aiState.done({
-      ...aiState.get(),
-      messages: [
-        ...aiState.get().messages.slice(0, -1),
-        {
-          role: 'assistant',
-          content: 'The purchase has completed successfully.'
-        }
-      ]
-    })
-
-    status.done('completed')
-  })()
-
-  return {
-    status: status.value,
-    display: ui.value
-  }
-}
-
 export const AI = createAI<AIState, UIState>({
   actions: {
-    submitUserMessage,
-    requestCode,
-    validateCode
+    submitUserMessage
   },
   initialUIState: [],
   initialAIState: { chatId: nanoid(), interactions: [], messages: [] },
@@ -393,6 +312,10 @@ export const getUIStateFromAIState = (aiState: Chat) => {
             </BotCard>
           ) : message.display?.name === 'applyOnline' ? (
             <BotCard>Test</BotCard>
+          ) : message.display?.name === 'error' ? (
+            <BotCard>
+              <ChatErrorMessage text={message.display.props.error} />
+            </BotCard>
           ) : (
             <BotMessage content={message.content} />
           )

@@ -6,14 +6,12 @@ import { PromptForm } from '@/components/chat/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconShare, SparklesIcon } from '@/components/ui/icons'
 import { ChatShareDialog } from '@/components/sidebar/chat-share-dialog'
-// @ts-ignore
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
 import { UserMessage } from '@/components/chat/message'
-import { Message } from '@/types'
+import ChatErrorMessage from '@/components/chat/chat-error-message'
 
 export interface ChatPanelProps {
   id?: string
@@ -85,7 +83,7 @@ export function ChatPanel({
           </div>
         ) : null}
 
-        <div className="grid gap-4 sm:pb-4">
+        <div className="grid gap-4 ">
           <PromptForm input={input} setInput={setInput} />
           {/* <FooterText className="hidden sm:block" /> */}
           <div className="flex items-center justify-center gap-3">
@@ -98,7 +96,7 @@ export function ChatPanel({
                     index > 1 && 'hidden md:block'
                   )}
                   onClick={async () => {
-                    setMessages((currentMessages: Message[]) => [
+                    setMessages((currentMessages: any) => [
                       ...currentMessages,
                       {
                         id: nanoid(),
@@ -111,16 +109,20 @@ export function ChatPanel({
                         example.message
                       )
 
-                      setMessages((currentMessages: Message[]) => [
+                      setMessages((currentMessages: any) => [
                         ...currentMessages,
                         responseMessage
                       ])
-                    } catch {
-                      toast(
-                        <div className="text-red-500">
-                          Senden der Nachricht fehlgeschlagen. Bitte versuche es
-                          später erneut.
-                        </div>
+                    } catch (error: any) {
+                      console.log(error)
+
+                      return (
+                        <ChatErrorMessage
+                          text={
+                            error.message ||
+                            'Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuche es erneut.'
+                          }
+                        />
                       )
                     }
                   }}

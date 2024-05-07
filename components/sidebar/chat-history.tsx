@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { SidebarList } from '@/components/sidebar/sidebar-list'
+import { UserMenu } from '../user-menu'
 
 interface ChatHistoryProps {
   userId?: string

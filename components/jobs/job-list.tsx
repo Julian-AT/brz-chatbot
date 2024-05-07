@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { useActions, useUIState } from 'ai/rsc'
-import { SitemapJob } from '@/types'
+import { Message, SitemapJob } from '@/types'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import BRZLogo from '@/public/logo-brz.png'
@@ -10,6 +10,7 @@ import BRZLogo from '@/public/logo-brz.png'
 import React from 'react'
 import Image from 'next/image'
 import { BriefcaseIcon, CalendarIcon, PinIcon } from 'lucide-react'
+import ChatErrorMessage from '../chat/chat-error-message'
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 
@@ -56,13 +57,29 @@ const JobList = ({ jobs }: JobListProps) => {
               key={job.loc}
               className="flex flex-row items-start gap-4 p-2 cursor-pointer sm:items-center rounded-xl hover:bg-card/25"
               onClick={async () => {
-                const response = await submitUserMessage(
-                  `The user has selected job ${job.title}, with url ${job.loc} and creation date ${job.lastmod}. Now proceeding to show job description.`
-                )
-                setMessages((currentMessages: any[]) => [
-                  ...currentMessages,
-                  response
-                ])
+                try {
+                  const response = await submitUserMessage(
+                    `The user has selected job ${job.title}, with url ${job.loc} and creation date ${job.lastmod}. Now proceeding to show job description.`
+                  )
+                  setMessages((currentMessages: Message[]) => [
+                    ...currentMessages,
+                    response
+                  ])
+                } catch (error: any) {
+                  console.log(error)
+
+                  setMessages((currentMessages: Message[]) => [
+                    ...currentMessages,
+                    {
+                      content: `${error.message}`,
+                      role: 'assistant',
+                      display: {
+                        name: 'error',
+                        props: { error: error.message }
+                      }
+                    } satisfies Message
+                  ])
+                }
               }}
             >
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 p-1.5 rounded-md bg-card/25">

@@ -30,6 +30,7 @@ const loadChats = cache(async (userId?: string) => {
 
 export async function SidebarList({ userId }: SidebarListProps) {
   const chats = await loadChats(userId)
+  const session = (await auth()) as Session
 
   return (
     <div className="flex flex-col flex-1 m-3 overflow-hidden">
@@ -100,7 +101,6 @@ export async function SidebarList({ userId }: SidebarListProps) {
             Impressum
           </Button>
         </ImprintDialog>
-        {/* <UserMenu user={session.user} /> */}
       </div>
     </div>
   )

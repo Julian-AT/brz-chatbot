@@ -1,43 +1,26 @@
-import { SitemapJob } from '@/types'
+'use server'
+
 import fetch from 'node-fetch'
+import xml2js from 'xml2js'
 
 const SITEMAP_URL = 'https://www.brz-jobs.at/sitemap.xml'
 
-function decodeJobTitleFromUrl(url: string): string {
-  const uriEncodedTitle = url.substring(url.lastIndexOf('/') + 1)
-
-  const decodedTitle = decodeURIComponent(uriEncodedTitle)
-    .replace(/-/g, ' ')
-    .replace(/\(w-m-d\)/g, '(w/m/d)')
-    .replace(/(FH-)\)/g, '$1)')
-    .replace(/(FH-)/g, '$1 ')
-    .replace(/-im-/g, ' im ')
-
-  return decodedTitle
-}
-
-export async function fetchSitemap(): Promise<SitemapJob[]> {
+export async function fetchSitemap(): Promise<any> {
   try {
     const response = await fetch(SITEMAP_URL)
     const xmlData = await response.text()
 
-    // Parse XML manually
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(xmlData, 'text/xml')
+    const parser = new xml2js.Parser({ explicitArray: false })
+    const jsonData = await parser.parseStringPromise(xmlData)
 
-    const urls = Array.from(xmlDoc.querySelectorAll('url'))
-      .slice(1)
-      .map(url => ({
-        loc: url.querySelector('loc')?.textContent || '',
-        lastmod: url.querySelector('lastmod')?.textContent || '',
-        title: decodeJobTitleFromUrl(
-          url.querySelector('loc')?.textContent || ''
-        )
-      })) as SitemapJob[]
+    const urls = jsonData.urlset.url.slice(1).map((url: any) => ({
+      loc: url.loc,
+      lastmod: url.lastmod
+    }))
 
     return urls
   } catch (error) {
-    console.error('Error fetching or parsing sitemap:', error)
-    return []
+    console.error('Fehler beim Abrufen oder Parsen der Sitemap:', error)
+    return null
   }
 }

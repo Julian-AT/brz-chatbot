@@ -1,3 +1,5 @@
+'use server'
+
 import cheerio from 'cheerio'
 
 export interface JobInfo {

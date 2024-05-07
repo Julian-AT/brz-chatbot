@@ -14,17 +14,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { startTransition, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { ScrollArea } from '../ui/scroll-area'
-import {
-  ChevronLeft,
-  ChevronLeftIcon,
-  ChevronLeftSquareIcon,
-  ChevronRightIcon,
-  MinusIcon,
-  SlashIcon,
-  ToggleLeft
-} from 'lucide-react'
+import { MinusIcon, SlashIcon } from 'lucide-react'
 import { useSidebar } from '@/lib/hooks/use-sidebar'
-import { IconBRZ } from '../ui/icons'
+import { IconBRZ, IconChevronLeft, IconChevronRight } from '../ui/icons'
 import Link from 'next/link'
 import { buttonVariants } from '../ui/button'
 
@@ -83,14 +75,14 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
           className="absolute left-0 my-auto text-sm font-semibold text-center top-1/2 group/toggle"
           onClick={() => startTransition(toggleSidebar)}
         >
-          <div className="group-hover/toggle:hidden">
-            <MinusIcon className="w-6 h-6 rotate-90" />
+          <div className=" group-hover/toggle:hidden">
+            <MinusIcon className={`w-5 h-6 rotate-90`} />
           </div>
           <div className="hidden group-hover/toggle:block">
             {isSidebarOpen ? (
-              <ChevronLeftIcon className="w-6 h-6" />
+              <IconChevronLeft className="w-6 h-6" />
             ) : (
-              <ChevronRightIcon className="w-6 h-6" />
+              <IconChevronRight className="w-6 h-6" />
             )}
           </div>
         </span>

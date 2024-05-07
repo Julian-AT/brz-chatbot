@@ -55,8 +55,7 @@ export function PromptForm({
         setInput('')
         if (!value) return
 
-        // Optimistically add user message UI
-        setMessages((currentMessages: Message[]) => [
+        setMessages((currentMessages: any) => [
           ...currentMessages,
           {
             id: nanoid(),
@@ -65,19 +64,25 @@ export function PromptForm({
         ])
 
         try {
-          // Submit and get response message
           const responseMessage = await submitUserMessage(value)
-          setMessages((currentMessages: Message[]) => [
+          setMessages((currentMessages: any) => [
             ...currentMessages,
             responseMessage
           ])
-        } catch {
-          toast(
-            <div className="text-red-500">
-              Senden der Nachricht fehlgeschlagen. Bitte versuche es später
-              erneut.
-            </div>
-          )
+        } catch (error: any) {
+          console.log(error)
+
+          setMessages((currentMessages: any) => [
+            ...currentMessages,
+            {
+              content: `${error.message}`,
+              role: 'assistant',
+              display: {
+                name: 'error',
+                props: { error: error.message }
+              }
+            } satisfies Message
+          ])
         }
       }}
     >
@@ -96,7 +101,7 @@ export function PromptForm({
 
           if (file.type.startsWith('video/')) {
             const responseMessage = await describeImage('')
-            setMessages((currentMessages: Message[]) => [
+            setMessages((currentMessages: any) => [
               ...currentMessages,
               responseMessage
             ])
@@ -107,7 +112,7 @@ export function PromptForm({
             reader.onloadend = async () => {
               const base64String = reader.result
               const responseMessage = await describeImage(base64String)
-              setMessages((currentMessages: Message[]) => [
+              setMessages((currentMessages: any) => [
                 ...currentMessages,
                 responseMessage
               ])
@@ -115,7 +120,7 @@ export function PromptForm({
           }
         }}
       />
-      <div className="relative flex items-center w-full h-24 overflow-hidden border-t sm:h-full max-h-60 bg-background/40 sm:rounded-md sm:border border-border">
+      <div className="relative flex items-center w-full h-24 overflow-hidden border-t sm:h-full max-h-60 bg-background sm:rounded-md sm:border border-border">
         <Textarea
           ref={inputRef}
           tabIndex={0}

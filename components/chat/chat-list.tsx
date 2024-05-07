@@ -10,7 +10,7 @@ export interface ChatList {
 
 export function ChatList({ messages, session, isShared }: ChatList) {
   return messages.length ? (
-    <div className="relative grid max-w-2xl gap-8 px-4 mx-auto auto-rows-max">
+    <div className="relative grid max-w-2xl gap-8 px-4 mx-auto mb-20 auto-rows-max">
       {!isShared && !session ? (
         <>
           <div className="relative flex items-start group md:-ml-12">
