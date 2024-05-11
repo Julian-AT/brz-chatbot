@@ -106,7 +106,8 @@ export async function shareChat(id: string) {
 
   if (!session?.user?.id) {
     return {
-      error: 'Unauthorized'
+      error:
+        'Du hast keine Berechtigung, diesen Chat zu teilen. Bitte melde dich an, um fortzufahren.'
     }
   }
 
@@ -114,7 +115,8 @@ export async function shareChat(id: string) {
 
   if (!chat || chat.userId !== session.user.id) {
     return {
-      error: 'Something went wrong'
+      error:
+        'Ein unerwarteter Fehle ist aufgetreten. Wenn dieses Problem weiterhin besteht, bitte melde dich bei uns.'
     }
   }
 
@@ -142,10 +144,6 @@ export async function saveChat(chat: Chat) {
   } else {
     return
   }
-}
-
-export async function refreshHistory(path: string) {
-  redirect(path)
 }
 
 export async function getMissingKeys() {

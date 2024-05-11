@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { IconSpinner, IconTrash } from '@/components/ui/icons'
 import { ServerActionResult } from '@/types'
+import { cn } from '@/lib/utils'
 
 interface ClearHistoryProps extends React.ComponentPropsWithoutRef<'button'> {
   isEnabled: boolean
@@ -39,10 +40,13 @@ export function ClearHistory({
         <Button
           variant="ghost"
           disabled={!isEnabled || isPending}
-          className={className}
+          className={cn('w-full', className)}
         >
-          {isPending && <IconSpinner className="mr-2" />}
-          <IconTrash />
+          {isPending ? (
+            <IconSpinner className="mr-3" />
+          ) : (
+            <IconTrash className="mr-3" />
+          )}
           Alle Chats Löschen
         </Button>
       </AlertDialogTrigger>

@@ -23,11 +23,11 @@ export function ThemeToggle({ className, ...props }: ThemeToggleProps) {
       className={className}
     >
       {!theme ? null : theme === 'dark' ? (
-        <IconMoon className="transition-all" />
+        <IconMoon className="mr-3 transition-all" />
       ) : (
-        <IconSun className="transition-all" />
+        <IconSun className="mr-3 transition-all" />
       )}
-      <span className="sr-only">Toggle theme</span>
+      <span>Theme Ändern</span>
     </Button>
   )
 }

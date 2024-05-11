@@ -18,6 +18,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '../user-menu'
 import { Session } from '@/types'
 import { auth } from '@/auth'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface SidebarListProps {
   userId?: string
@@ -30,7 +31,6 @@ const loadChats = cache(async (userId?: string) => {
 
 export async function SidebarList({ userId }: SidebarListProps) {
   const chats = await loadChats(userId)
-  const session = (await auth()) as Session
 
   return (
     <div className="flex flex-col flex-1 m-3 overflow-hidden">
@@ -64,21 +64,22 @@ export async function SidebarList({ userId }: SidebarListProps) {
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 py-2 mt-5 overflow-auto">
-        <SidebarItems chats={chats} />
-        <div>
-          <Link
-            href="/"
-            className={cn(
-              buttonVariants({ variant: 'outline' }),
-              'h-12 w-full justify-start px-4 bg-primary shadow-none transition-colors rounded-[10px] border border-primary text-[#e5e5e5] hover:text-[#e5e5e5] hover:bg-primary/90',
-              chats?.length ? 'mt-2' : 'mt-0'
-            )}
-          >
-            <IconPlus className="w-[15px] h-[15px] mx-2 text-lg -translate-x-2 " />
-            Neuer Chat
-          </Link>
-        </div>
+      <div className="flex flex-col flex-1 py-2 mt-5 overflow-hidden">
+        <Link
+          href="/"
+          className={cn(
+            buttonVariants({ variant: 'outline' }),
+            'h-12 mb-1 w-full justify-start px-4 bg-primary shadow-none transition-colors rounded-[10px] border border-primary text-[#e5e5e5] hover:text-[#e5e5e5] hover:bg-primary/90',
+            chats?.length ? 'mt-2' : 'mt-0'
+          )}
+        >
+          <IconPlus className="w-[15px] h-[15px] mx-2 text-lg -translate-x-2 " />
+          Neuer Chat
+        </Link>
+        <ScrollArea className="box-border overflow-auto">
+          <SidebarItems chats={chats} />
+        </ScrollArea>
+
         {!chats || chats.length == 0 ? (
           <div className="p-8 text-center">
             <p className="text-sm text-muted-foreground">Keine Chatverläufe</p>
@@ -101,6 +102,7 @@ export async function SidebarList({ userId }: SidebarListProps) {
             Impressum
           </Button>
         </ImprintDialog>
+        {/* <UserMenu user={session.user} /> */}
       </div>
     </div>
   )

@@ -1,17 +1,22 @@
 'use client'
 
 import { useFormState, useFormStatus } from 'react-dom'
-import { signup } from '@/app/signup/actions'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { IconSpinner } from '@/components/ui/icons'
-import { getMessageFromCode } from '@/lib/utils'
+import { cn, getMessageFromCode } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { IconSpinner } from '@/components/ui/icons'
+import BRZLogo from '@/public/logo-brz.png'
+import Image from 'next/image'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { FooterText } from '@/components/footer'
+import { signup } from '@/app/signup/actions'
 
 export default function SignupForm() {
   const router = useRouter()
   const [result, dispatch] = useFormState(signup, undefined)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (result) {
@@ -22,74 +27,68 @@ export default function SignupForm() {
         router.refresh()
       }
     }
+
+    setIsLoading(false)
   }, [result, router])
 
   return (
-    <form
-      action={dispatch}
-      className="flex flex-col items-center gap-4 space-y-3"
-    >
-      <div className="flex-1 w-full px-6 pt-8 pb-4 bg-white border shadow-md rounded-xl md:w-96 dark:bg-zinc-950">
-        <h1 className="mb-3 text-2xl font-bold">Sign up for an account!</h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="block mt-5 mb-3 text-xs font-medium text-zinc-400"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-lg border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                required
-              />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="block mt-5 mb-3 text-xs font-medium text-zinc-400"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-lg border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-            </div>
+    <main className="flex flex-col items-center justify-center w-full h-full px-4 overflow-hidden">
+      <div className="w-full max-w-sm text-muted-foreground">
+        <div className="text-center">
+          <Image
+            src={BRZLogo}
+            width={100}
+            height={100}
+            alt="BRZ Logo"
+            className="mx-auto"
+          />
+          <div className="mt-5 space-y-2">
+            <h3 className="text-2xl font-bold text-secondary-foreground sm:text-3xl"></h3>
+            <p className="">
+              Du hast schon einen Account?{' '}
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({ variant: 'link' }),
+                  'text-secondary-foreground px-0'
+                )}
+              >
+                Login
+              </Link>
+            </p>
           </div>
         </div>
-        <LoginButton />
+        <form
+          action={data => {
+            setIsLoading(true)
+            return dispatch(data)
+          }}
+          className="mt-8 space-y-5"
+        >
+          <div>
+            <label className="font-medium">Email</label>
+            <input
+              type="email"
+              required
+              className="w-full px-3 py-2 mt-2 bg-transparent border rounded-lg shadow-sm outline-none text-muted-foreground focus:border-primary"
+            />
+          </div>
+          <div>
+            <label className="font-medium">Passwort</label>
+            <input
+              type="password"
+              required
+              className="w-full px-3 py-2 mt-2 bg-transparent border rounded-lg shadow-sm outline-none text-muted-foreground focus:border-primary"
+            />
+          </div>
+
+          <Button type="submit" disabled={isLoading} className="w-full h-10">
+            {isLoading && <IconSpinner className="w-5 h-5 mr-2 animate-spin" />}
+            Registrieren
+          </Button>
+        </form>
       </div>
-
-      <Link href="/login" className="flex flex-row gap-1 text-sm text-zinc-400">
-        Already have an account?
-        <div className="font-semibold underline">Log in</div>
-      </Link>
-    </form>
-  )
-}
-
-function LoginButton() {
-  const { pending } = useFormStatus()
-
-  return (
-    <button
-      className="flex flex-row items-center justify-center w-full h-10 p-2 my-4 text-sm font-semibold rounded-lg bg-zinc-900 text-zinc-100 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-      aria-disabled={pending}
-    >
-      {pending ? <IconSpinner /> : 'Create account'}
-    </button>
+      <FooterText className="absolute text-center bottom-3 mx-center" />
+    </main>
   )
 }

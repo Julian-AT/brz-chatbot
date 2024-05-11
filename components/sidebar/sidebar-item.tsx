@@ -57,7 +57,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         href={chat.path}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'relative group pr-10 transition-colors hover:bg-background-secondary h-12 my-1 min-w-full gap-1.5 flex justify-start',
+          'relative group pr-10 transition-colors hover:bg-background-secondary h-12 my-1 max-w-full w-full gap-1.5 flex justify-start',
           isActive && 'pr-12 font-medium bg-background-secondary'
         )}
       >
@@ -78,7 +78,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         </div>
         <div
           className={cn(
-            'relative flex-1  overflow-hidden break-all select-none text-ellipsis',
+            'relative flex-1 w-0 truncate   overflow-hidden break-all select-none text-ellipsis',
             isActive && 'mr-3'
           )}
           title={chat.title}

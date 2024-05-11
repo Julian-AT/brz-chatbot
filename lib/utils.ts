@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx'
+import moment from 'moment'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
 
@@ -74,16 +75,31 @@ export enum ResultCode {
 export const getMessageFromCode = (resultCode: string) => {
   switch (resultCode) {
     case ResultCode.InvalidCredentials:
-      return 'Invalid credentials!'
+      return 'Ungültige Anmeldedaten, bitte versuche es erneut!'
     case ResultCode.InvalidSubmission:
-      return 'Invalid submission, please try again!'
+      return 'Ungültige Eingabe, bitte versuche es erneut!'
     case ResultCode.UserAlreadyExists:
-      return 'User already exists, please log in!'
+      return 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits.'
     case ResultCode.UserCreated:
-      return 'User created, welcome!'
+      return 'Benutzer erstellt, Willkommen!'
     case ResultCode.UnknownError:
-      return 'Something went wrong, please try again!'
+      return 'Ein unbekannter Fehler ist aufgetreten! Bitte versuche es erneut.'
     case ResultCode.UserLoggedIn:
-      return 'Logged in!'
+      return 'Erfolgreich angemeldet!'
   }
+}
+
+const dateFromNow = (date: Date) => {
+  const fromNow = moment(date).fromNow()
+
+  return moment(date).calendar(null, {
+    lastWeek: '[Letzte] dddd',
+    lastDay: '[Gestern um] HH:mm [Uhr]',
+    sameDay: '[Heute um] HH:mm [Uhr]',
+    nextDay: '[Morgen um] HH:mm [Uhr]',
+    nextWeek: 'dddd',
+    sameElse: function () {
+      return '[' + fromNow + ']'
+    }
+  })
 }

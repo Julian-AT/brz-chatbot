@@ -24,7 +24,7 @@ import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
 import { z } from 'zod'
 import { rateLimit } from '@/lib/chat/ratelimit'
-import { fetchSitemap } from '@/lib/jobs/sitemap'
+import { fetchSitemap, findMatchingJobs } from '@/lib/jobs/sitemap'
 import JobList from '@/components/jobs/job-list'
 import { extractJobInfoFromUrl } from '../jobs/job-info'
 import JobCard from '@/components/jobs/job-card'
@@ -71,12 +71,9 @@ async function submitUserMessage(content: string) {
             description: 'List available positions, max 5.',
             parameters: z.object({
               positions: z.array(
-                z
-                  .string()
-                  .describe(
-                    'List of available positions. Include developer as one of the positions.'
-                  )
-              )
+                z.string().describe('List of available positions.')
+              ),
+              query: z.string().optional().describe('Optional search query.')
             })
           },
           showJobDescription: {
@@ -97,14 +94,16 @@ async function submitUserMessage(content: string) {
           }
         },
         system: `\
-        Sie sind ein freundlicher Assistent, der dem Benutzer bei der Bewerbung auf offene Stellen im Bundesrechenzentrum hilft. Sie können dem Benutzer Stellenempfehlungen basierend auf seinen Fähigkeiten geben und werden ihm weiterhin bei der Bewerbung auf eine Stelle helfen.
+        Du bist ein freundlicher, hilfreicher Assistent, der Auskünfte über das Bundesrechenzentrum in Wien gibt. Du kannst generelle Informationen über das BRZ geben, Stellenempfehlungen basierend auf den Fähigkeiten des Benutzers machen und ihm bei der Bewerbung auf eine Stelle helfen.
     
         Das heutige Datum ist ${format(new Date(), 'd. LLLL yyyy')}. 
-    
-        Hier ist der Ablauf: 
+        Wenn der Benutzer nach Jobs im BRZ fragt, benutze diesen Ablauf (Der Ablauf kann auch jederzeit vom User abgebrochen werden):
+
         1. Liste verfügbarer Positionen.
         2. Zeige die Stellenbeschreibung für eine bestimmte Position.
         3. Leite zur Online-Bewerbung weiter.
+
+        Wenn der Benutzer nach generellen Informationen fragt, antworte so gut möglich aber erfinde keine inakkuraten Informationen.
         `,
         messages: [...history]
       })
@@ -140,7 +139,16 @@ async function submitUserMessage(content: string) {
           const { toolName, args } = delta
 
           if (toolName === 'listPositions') {
-            const jobs = await fetchSitemap()
+            const { query } = args
+            console.log(query)
+
+            let jobs
+
+            if (query) {
+              jobs = await findMatchingJobs(query)
+            } else {
+              jobs = await fetchSitemap()
+            }
 
             uiStream.update(
               <BotCard>
@@ -156,9 +164,7 @@ async function submitUserMessage(content: string) {
                 {
                   id: nanoid(),
                   role: 'assistant',
-                  content: `Hier ist eine Liste der verfügbaren Positionen. Wählen Sie eine aus, um die Stellenbeschreibung anzuzeigen.\n\n ${jobs.join(
-                    ', '
-                  )}.`,
+                  content: `Hier ist eine Liste der verfügbaren Positionen. Wähle eine aus, um die Stellenbeschreibung anzuzeigen.\n`,
                   display: {
                     name: 'listPositions',
                     props: {

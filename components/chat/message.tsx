@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { IconUser } from '@/components/ui/icons'
+import { IconBRZ, IconUser } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import { spinner } from '@/components/chat/spinner'
 import { CodeBlock } from '@/components/ui/codeblock'
@@ -16,12 +16,24 @@ import { useStreamableText } from '@/lib/hooks/use-streamable-text'
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex items-start group md:-ml-12">
-      <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
-        <IconUser />
+    <div className="relative flex-col items-start mb-4 group md:flex-row xl:-ml-12 ">
+      <div className="flex mb-5 ml-4 md:hidden">
+        <div
+          className={cn(
+            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-background'
+          )}
+        >
+          <IconUser />
+        </div>
+        <div className="flex flex-col mx-3 text-sm">
+          <b>Du</b>
+        </div>
       </div>
-      <div className="flex-1 pl-2 ml-4 space-y-2 overflow-hidden">
-        {children}
+      <div className="flex space-x-5">
+        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-background">
+          <IconUser />
+        </div>
+        <div>{children}</div>
       </div>
     </div>
   )
@@ -37,10 +49,7 @@ export function BotMessage({
   const text = useStreamableText(content)
 
   return (
-    <div className={cn('group relative flex items-start md:-ml-12', className)}>
-      <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
-        <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
-      </div>
+    <BotCard>
       <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
         <MemoizedReactMarkdown
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
@@ -84,7 +93,7 @@ export function BotMessage({
           {text}
         </MemoizedReactMarkdown>
       </div>
-    </div>
+    </BotCard>
   )
 }
 
@@ -96,16 +105,25 @@ export function BotCard({
   showAvatar?: boolean
 }) {
   return (
-    <div className="relative flex items-start group md:-ml-12">
-      <div
-        className={cn(
-          'bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm',
-          !showAvatar && 'invisible'
-        )}
-      >
-        <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
+    <div className="relative flex-col items-start mb-4 group md:flex-row xl:-ml-12 ">
+      <div className="flex mb-5 ml-4 md:hidden">
+        <div
+          className={cn(
+            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-background text-primary dark:bg-primary dark:text-background'
+          )}
+        >
+          <IconBRZ />
+        </div>
+        <div className="flex flex-col mx-3 text-sm">
+          <b>Du</b>
+        </div>
       </div>
-      <div className="flex-1 pl-2 ml-4">{children}</div>
+      <div className="flex space-x-5">
+        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-background text-primary dark:text-background">
+          <IconBRZ className="w-full h-full text-primary p-1.5" />
+        </div>
+        <div>{children}</div>
+      </div>
     </div>
   )
 }
@@ -123,14 +141,5 @@ export function SystemMessage({ children }: { children: React.ReactNode }) {
 }
 
 export function SpinnerMessage() {
-  return (
-    <div className="relative flex items-start group md:-ml-12">
-      <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
-        <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
-      </div>
-      <div className="ml-4 h-[24px] flex flex-row items-center flex-1 space-y-2 overflow-hidden px-1">
-        {spinner}
-      </div>
-    </div>
-  )
+  return <BotCard>{spinner}</BotCard>
 }

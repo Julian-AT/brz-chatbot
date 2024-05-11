@@ -59,7 +59,7 @@ const JobList = ({ jobs }: JobListProps) => {
               onClick={async () => {
                 try {
                   const response = await submitUserMessage(
-                    `The user has selected job ${job.title}, with url ${job.loc} and creation date ${job.lastmod}. Now proceeding to show job description.`
+                    `The user has selected the job with url ${job.loc}. Procede to show job description.`
                   )
                   setMessages((currentMessages: Message[]) => [
                     ...currentMessages,
@@ -82,7 +82,7 @@ const JobList = ({ jobs }: JobListProps) => {
                 }
               }}
             >
-              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 p-1.5 rounded-md bg-card/25">
+              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 p-1.5 rounded-md bg-background/50 border">
                 <Image
                   src={BRZLogo}
                   width={1024}
