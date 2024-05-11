@@ -89,6 +89,17 @@ export const getMessageFromCode = (resultCode: string) => {
   }
 }
 
+export function abbreviateNumber(num: number): string {
+  const abbreviations = ['', 'k', 'm', 'b', 't']
+  const numAbs = Math.abs(num)
+  const abbreviatedNum =
+    numAbs > 999 ? abbreviations[Math.floor(Math.log10(numAbs) / 3)] : ''
+  return (
+    Math.round(num / Math.pow(10, Math.floor(Math.log10(numAbs) - 1))) +
+    abbreviatedNum
+  )
+}
+
 const dateFromNow = (date: Date) => {
   const fromNow = moment(date).fromNow()
 

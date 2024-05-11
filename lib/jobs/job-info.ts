@@ -1,8 +1,10 @@
 'use server'
 
-import cheerio from 'cheerio'
+// import cheerio from 'cheerio'
+const cheerio = require('cheerio')
 
 export interface JobInfo {
+  image: string | undefined
   title: string | undefined
   reference: string | undefined
   location: string | undefined
@@ -23,6 +25,7 @@ export async function extractJobInfoFromUrl(url: string): Promise<JobInfo> {
     const html = await response.text()
     const $ = cheerio.load(html)
 
+    const image = $('.jobAdHeader img').attr('src')
     const title = $('.jobAdTitle h1').text().trim()
     const reference = $('.jobAdTitle span').text().trim()
     const location = $('.shortFacts div:nth-of-type(1) span').text().trim()
@@ -49,6 +52,7 @@ export async function extractJobInfoFromUrl(url: string): Promise<JobInfo> {
     const entryText = $('.jobBlock:nth-of-type(1) p').text().trim()
 
     return {
+      image,
       title,
       reference,
       location,
@@ -68,3 +72,13 @@ export async function extractJobInfoFromUrl(url: string): Promise<JobInfo> {
     )
   }
 }
+
+;(async () => {
+  console.log('fetchinig job info')
+
+  const result = await extractJobInfoFromUrl(
+    'https://www.brz-jobs.at/Job/1195/Senior-Java-Fullstack-Developer-(w-m-d)'
+  )
+
+  console.log(result)
+})()
