@@ -72,43 +72,26 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
       className="group w-full pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px] flex items-center justify-center h-full  "
       ref={scrollRef}
     >
-      {session?.user ? (
-        <span
-          className="absolute left-0 my-auto text-sm font-semibold text-center top-1/2 group/toggle"
-          onClick={() => startTransition(toggleSidebar)}
-        >
-          <div className=" group-hover/toggle:hidden">
-            <MinusIcon className={`w-5 h-6 rotate-90`} />
-          </div>
-          <div className="hidden group-hover/toggle:block">
-            {isSidebarOpen ? (
-              <IconChevronLeft className="w-6 h-6" />
-            ) : (
-              <IconChevronRight className="w-6 h-6" />
-            )}
-          </div>
-        </span>
-      ) : (
-        <span className="absolute flex items-center gap-3 text-sm top-2 left-3">
-          <div className="flex items-center justify-center w-10 h-10 p-1 rounded-full bg-background">
-            <IconBRZ className="w-full h-full" />
-          </div>{' '}
-          <SlashIcon className="w-4 h-6 -rotate-12" />
-          <Link
-            href={'/login'}
-            className={cn(
-              buttonVariants({ variant: 'link' }),
-              'px-0 text-lg text-secondary-foreground'
-            )}
-          >
-            Login
-          </Link>
-        </span>
-      )}
+      <span
+        className="absolute left-0 z-20 my-auto text-sm font-semibold text-center top-1/2 group/toggle"
+        onClick={() => startTransition(toggleSidebar)}
+      >
+        <div className=" group-hover/toggle:hidden">
+          <MinusIcon className={`w-5 h-6 rotate-90`} />
+        </div>
+        <div className="hidden group-hover/toggle:block">
+          {isSidebarOpen ? (
+            <IconChevronLeft className="w-6 h-6" />
+          ) : (
+            <IconChevronRight className="w-6 h-6" />
+          )}
+        </div>
+      </span>
+
       {messages.length ? (
         <div
           className={cn(
-            'flex flex-col h-full w-full overflow-hidden',
+            'flex flex-col h-full w-full overflow-hidden z-10',
             className
           )}
         >

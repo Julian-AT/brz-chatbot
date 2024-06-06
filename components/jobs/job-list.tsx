@@ -55,7 +55,7 @@ const JobList = ({ jobs }: JobListProps) => {
           jobs.slice(0, 5).map(job => (
             <div
               key={job.loc}
-              className="flex flex-row items-start gap-4 p-2 cursor-pointer sm:items-center rounded-xl hover:bg-card/25"
+              className="flex flex-row items-start gap-4 p-2 cursor-pointer sm:items-center rounded-xl hover:bg-secondary"
               onClick={async () => {
                 try {
                   const response = await submitUserMessage(

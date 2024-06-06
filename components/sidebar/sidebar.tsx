@@ -17,8 +17,8 @@ export function Sidebar({ className, children }: SidebarProps) {
       data-state={isSidebarOpen && !isLoading ? 'open' : 'closed'}
       className={cn(
         className,
-        'h-full flex-col lg:max-w-xs 2xl:max-w-[400px]',
-        !isSidebarOpen && 'max-w-[0px] lg:max-w-[0px] 2xl:max-w-[0px]'
+        'h-full w-full flex-col lg:max-w-xs 2xl:max-w-[400px] overflow-hidden',
+        !isSidebarOpen && 'max-w-[0px] lg:max-w-[0px] 2xl:max-w-[0px] w-0'
       )}
     >
       {children}

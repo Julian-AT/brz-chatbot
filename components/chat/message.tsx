@@ -20,7 +20,7 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
       <div className="flex mb-5 ml-4 md:hidden">
         <div
           className={cn(
-            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-background'
+            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-secondary'
           )}
         >
           <IconUser />
@@ -30,7 +30,7 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="flex space-x-5">
-        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-background">
+        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-secondary">
           <IconUser />
         </div>
         <div>{children}</div>
@@ -109,7 +109,7 @@ export function BotCard({
       <div className="flex mb-5 ml-4 md:hidden">
         <div
           className={cn(
-            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-background text-primary dark:bg-primary dark:text-background'
+            'h-10 w-10 shrink-0 select-none items-center justify-center rounded-md border shadow flex bg-secondary text-primary dark:bg-primary dark:text-background'
           )}
         >
           <IconBRZ />
@@ -119,7 +119,7 @@ export function BotCard({
         </div>
       </div>
       <div className="flex space-x-5">
-        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-background text-primary dark:text-background">
+        <div className="items-center justify-center hidden w-10 h-10 border rounded-md shadow select-none shrink-0 md:flex bg-secondary text-primary dark:text-background">
           <IconBRZ className="w-full h-full text-primary p-1.5" />
         </div>
         <div>{children}</div>

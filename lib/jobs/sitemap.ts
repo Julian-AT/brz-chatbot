@@ -26,7 +26,7 @@ function decodeJobTitleFromUrl(url: string): string {
   return decodedTitle
 }
 
-export async function fetchSitemap(): Promise<any> {
+export async function fetchSitemap(): Promise<SitemapJob[]> {
   try {
     const response = await fetch(SITEMAP_URL)
     const xmlData = await response.text()
@@ -45,7 +45,7 @@ export async function fetchSitemap(): Promise<any> {
     return urls
   } catch (error) {
     console.error('Fehler beim Abrufen oder Parsen der Sitemap:', error)
-    return null
+    return []
   }
 }
 

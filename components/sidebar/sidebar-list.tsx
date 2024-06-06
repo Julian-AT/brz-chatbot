@@ -25,7 +25,7 @@ interface SidebarListProps {
   children?: React.ReactNode
 }
 
-const loadChats = cache(async (userId?: string) => {
+export const loadChats = cache(async (userId?: string) => {
   return await getChats(userId)
 })
 
@@ -33,37 +33,7 @@ export async function SidebarList({ userId }: SidebarListProps) {
   const chats = await loadChats(userId)
 
   return (
-    <div className="flex flex-col flex-1 m-3 overflow-hidden">
-      <div className="relative h-20">
-        <div className="flex w-full h-full bg-secondary rounded-xl">
-          <a
-            href={'https://brz-chatbot.vercel.app/'}
-            className="w-12 h-12 m-auto ml-5 mr-3 border rounded-full border-primary border-opacity-80 bg-primary text-secondary"
-          >
-            <IconBRZ className="w-full h-full p-1.5" />
-          </a>
-          <div className="flex flex-col justify-center flex-1">
-            <div className="hidden text-lg leading-5 text-secondary-foreground 2xl:block">
-              <Button
-                variant={'link'}
-                size={'sm'}
-                className="h-5 p-0 text-base font-normal text-secondary-foreground"
-              >
-                <Link href={'https://brz-chatbot.vercel.app/'}>
-                  Bundesrechenzentrum Chatbot
-                </Link>
-              </Button>
-            </div>
-            <div className="block text-lg leading-5 text-secondary-foreground 2xl:hidden">
-              BRZ Chatbot
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {chats?.length} Chat{chats?.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-        </div>
-      </div>
-
+    <div className="w-full h-full">
       <div className="flex flex-col flex-1 py-2 mt-5 overflow-hidden">
         <Link
           href="/"

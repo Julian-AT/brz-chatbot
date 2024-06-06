@@ -80,15 +80,12 @@ export type Message = {
 
 export type AIState = {
   chatId: string
-  interactions?: string[]
   messages: Message[]
 }
 
 export type UIState = {
   id: string
   display: React.ReactNode
-  spinner?: React.ReactNode
-  attachments?: React.ReactNode
 }[]
 
 export type SitemapJob = {
